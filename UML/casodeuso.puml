@@ -1,0 +1,38 @@
+@startuml SistemaDeEstoqueLab
+
+actor Técnico as US01
+actor Administrador_Geral as US02
+
+(Realizar Login) as SA01
+
+(Verificar de Histórico de Atividades) as RF02
+(Cadastrar Pesquisador) as RF03
+(Gerenciar Reagentes) as RF04
+(Gerenciar Solicitação) as RF05
+
+(Verificar Estoque) as MGR01
+(Cadastrar Reagente) as MGR02
+(Descartar Reagente) as MGR03
+
+(Soliticar Pedido de Reagentes) as MGS01
+(Agendar Reagentes) as MGS02
+
+US01-->RF05
+US01 --> SA01
+US01 --> RF04
+US01 -->RF02
+US02 --> SA01
+US02 --> RF03
+US02 --> RF02
+
+MGR01 -> RF04
+MGR02 -> RF04
+MGR03 -> RF04
+
+MGS01 -> RF05
+MGS02 -> RF05
+
+RF02 -> RF05
+RF02 -> RF04
+
+@enduml

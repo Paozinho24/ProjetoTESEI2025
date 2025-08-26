@@ -1,0 +1,89 @@
+@startuml SistemaLaboratorio
+
+class Reagente {
+  -Nome: String
+  -CAS: String
+  -Formula: String
+  -Pureza: String
+  -UnidadePadrao: String
+
+  +Cadastrar(): void
+  +AtualizarDados(): void
+  +EstoqueTotal(): Decimal
+  +InventariosDisponiveis(): List<Inventario>
+}
+class Inventario {
+  -Identificador: String
+  -Capacidade: Decimal
+  -QuantidadeAtual: Decimal
+  -Validade: Date
+  -Observacoes: String
+
+  +PodeRetirar(qtd: Decimal): Boolean
+  +Retirar(qtd: Decimal): void
+  +Devolver(qtd: Decimal): void
+}
+
+class Localizacao {
+  -Armario: String
+  -Prateleira: String
+  -Posicao: String
+  -Condicoes: String
+
+  +MoverInventario(f: Inventario): void
+  +ListarInventarios(): List<Inventario>
+}
+
+class Movimentacao {
+  -Tipo: TipoMovimentacao
+  -StatusMovimentacao: StatusMovimentacao
+  -Quantidade: Decimal
+  -DataHora: DateTime
+  -Motivo: String
+  -ProjetoRef: String
+
+  +Registrar(): void
+}
+
+class Usuario {
+  -Nome: String
+  -CPF: String
+  -Email: String
+  -Telefone: String
+
+  +Autenticar(): Boolean
+}
+
+enum TipoMovimentacao {
+  Retirada
+  Devolucao
+  Ajuste
+  Descarte
+}
+
+enum StatusMovimentacao {
+  Aberto
+  EmConferencia
+  Fechado
+}
+
+enum Perfil {
+  Tecnico
+  Pesquisador
+  Administrador
+}
+
+class Tecnico
+class Pesquisador
+class Administrador
+
+Usuario <|-- Tecnico
+Usuario <|-- Pesquisador
+Usuario <|-- Administrador
+
+Reagente   "1"   -- "0..*" Inventario   : possui
+Localizacao "1"  -- "0..*" Inventario   : armazena
+Usuario    "1"   -- "0..*" Movimentacao : solicita
+Inventario "1"   -- "0..*" Movimentacao : movimenta
+
+@enduml
