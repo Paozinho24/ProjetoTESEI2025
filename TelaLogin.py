@@ -1,13 +1,13 @@
 import tkinter as tk
 import ttkbootstrap as tb 
-from ttkbootstrap.dialogs import Messagebox  # <-- acrescentei para feedback visual
+from ttkbootstrap.dialogs import Messagebox  # acrescentei para feedback visual
 import sqlite3
 from sqlite3 import Error
 
 
 class TelaLogin:
     def __init__(self, master):
-        # aplica tema (mude para "darkly", "cyborg", "morph" se quiser)
+      
         self.style = tb.Style("flatly")
 
         # Configuração básica
@@ -41,10 +41,10 @@ class TelaLogin:
         # Enter também envia
         self.janela.bind("<Return>", lambda e: self._login())
 
-    # ---------- BANCO ----------
+    # CONEXÃO COM O BRANCO BRABO
     def conexao_banco():
-        # dica: prefira caminho absoluto ou string raw r"..."
-        caminho = r"ProjetoTESEI2025\BancoDeDados\BancoProjetoTese.db"
+     
+        caminho = "ProjetoTESEI2025\BancoDeDados\BancoProjetoTese.db"
         con = None
         try:
             con = sqlite3.connect(caminho)
@@ -53,7 +53,7 @@ class TelaLogin:
         except Error as ex:
             print(ex)
 
-    # ---------- LÓGICA DE LOGIN ----------
+    # LOGIN BRABO
     def _login(self):
         cpf = self.entry_usuario.get().strip()
         senha = self.entry_senha.get()
@@ -73,8 +73,6 @@ class TelaLogin:
 
         try:
             cur = conexao.cursor()
-            # Ajuste a tabela/colunas se necessário:
-            # Ex.: tabela = 'usuarios', colunas = 'cpf' e 'senha'
             cur.execute("SELECT 1 FROM Tecnicos WHERE CPF = ? AND Senha = ?", (cpf, senha))
             achou = cur.fetchone() is not None
 
@@ -88,10 +86,8 @@ class TelaLogin:
             Messagebox.show_error(f"Erro ao consultar o banco:\n{ex}", "Erro")
 
 
-# cria/usa a conexão (mantendo seu padrão)
 conexao = TelaLogin.conexao_banco()
 
-# mantém o padrão do seu código
 gui = tk.Tk()
 TelaLogin(gui)
 gui.mainloop()
