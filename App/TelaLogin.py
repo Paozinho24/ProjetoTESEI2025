@@ -1,5 +1,6 @@
 import tkinter as tk
 import ttkbootstrap as tb
+import TelaPrincipal
 from ttkbootstrap.dialogs import Messagebox
 from Control import ControllerGeral
 from Model import Model
@@ -54,14 +55,41 @@ class TelaLogin:
 
         try:
             ok = self.controller.login(cpf, senha)
-            if ok:
+            
+            if ok == True:
                 Messagebox.ok("Login realizado com sucesso!", "Sucesso", alert=False)
-                # aqui você pode abrir a próxima tela se quiser
-            else:
-                Messagebox.show_error("CPF ou senha incorretos.", "Acesso negado")
-        except Exception as ex:
-            Messagebox.show_error("Erro ao validar login:\n{}".format(ex), "Erro")
+             
+                try:
+                    self.janela.withdraw()
+                except:
+                    pass
 
+                self.tela_principal = tk.Toplevel(self.janela)
+                self.tela_principal.title("Tela Principal")
+                TelaPrincipal.TelaPrincipal(self.tela_principal)
+
+                def _fechar_tudo():
+                    try:
+                        self.tela_principal.destroy()
+                    except:
+                        pass
+                    try:
+                        self.janela.destroy()
+                    except:
+                        pass
+
+                self.tela_principal.protocol("WM_DELETE_WINDOW", _fechar_tudo)
+                # <<< FIM DA ADIÇÃO
+
+            else:
+                
+                Messagebox.show_error("CPF ou senha incorretos.", "Acesso negado")
+                
+        except Exception as ex:
+            
+            Messagebox.show_error("Erro ao validar login:\n{}".format(ex), "Erro")
+               
+             
 gui = tk.Tk()
 TelaLogin(gui)
 gui.mainloop()
