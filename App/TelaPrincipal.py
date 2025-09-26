@@ -56,30 +56,24 @@ class TelaPrincipal():
         self.botao_retirar = ttk.Button(self.frame_inferior_botoes, text='Retirar', bootstyle='primary', width=15)
         self.botao_relatorios = ttk.Button(self.frame_inferior_botoes, text='Relatórios', bootstyle='primary', width=15)
 
-        #Gerenciando pelo Pack:
-
-            #Gerenciando o frame superior:
+        # Packs
         self.frame_superior.pack(side='top', fill='x')
         self.frame_superior.pack_propagate(False)
         self.frame_logout.pack(side='right', padx=40)
         self.frame_logout.pack_propagate(False)
         self.botao_logout.pack(side='bottom', pady=10)
         self.lbl_logout.pack(side='bottom', pady=10)
-        
-            #Gerenciando estética:
+
         self.frame_azul_abaixo.pack(side='bottom', fill='x')
         self.frame_azul_acima.pack(side='top', fill='x')
         self.frame_azul_direita.pack(side='right', fill='y')
         self.frame_azul_esquerda.pack(side='left', fill='y')
-        self.tabela.pack(side='top', pady=30)
 
-            #Gerenciando o frame inferior:
         self.frame_inferior_botoes.pack(side='bottom')
         self.frame_inferior_botoes.pack_propagate(False)
         self.botao_cadastrar.pack(side='left')
         self.botao_retirar.pack(side='right')
         self.botao_relatorios.pack(expand=True)
-
 
         # === CARREGAR DADOS NA TABELA ===
         self.carregar_dados_tabela()   # sem filtro; se quiser, passe um nome parcial que vai buscar diretamente um reagente pelo nome , vamos incrementar no futuro
@@ -111,6 +105,4 @@ class TelaPrincipal():
             print("Erro ao carregar dados da tabela:", ex)
 
 
-gui=ttk.Window(themename='flatly')
-TelaPrincipal(gui)
-gui.mainloop()
+

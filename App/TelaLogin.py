@@ -1,6 +1,5 @@
-import tkinter as tk
-import ttkbootstrap as ttk
-import TelaPrincipal
+import ttkbootstrap as tkk
+from TelaPrincipal import TelaPrincipal
 from ttkbootstrap.dialogs import Messagebox
 from Control import ControllerGeral
 from Model import Model
@@ -8,7 +7,6 @@ from Model import Model
 class TelaLogin:
     def __init__(self, master):
         # Estilo e janela
-        self.style = ttk.Style()
         self.janela = master
         self.janela.title("Login")
         self.janela.geometry("400x300")
@@ -19,21 +17,21 @@ class TelaLogin:
         self.controller = ControllerGeral()
 
         # Título
-        ttk.Label(self.janela, text="Faça login", font=("TkDefaultFont", 12, "bold")).pack(pady=(20, 10))
+        tkk.Label(self.janela, text="Faça login", font=("TkDefaultFont", 12, "bold")).pack(pady=(20, 10))
 
         # Usuário (CPF)
-        ttk.Label(self.janela, text="Usuário (CPF):").pack(pady=(5, 2))
-        self.entry_usuario = ttk.Entry(self.janela, width=30)
+        tkk.Label(self.janela, text="Usuário (CPF):").pack(pady=(5, 2))
+        self.entry_usuario = tkk.Entry(self.janela, width=30)
         self.entry_usuario.pack(pady=5)
         self.entry_usuario.focus()
 
         # Senha
-        ttk.Label(self.janela, text="Senha:").pack(pady=(10, 2))
-        self.entry_senha = ttk.Entry(self.janela, width=30, show="*")
+        tkk.Label(self.janela, text="Senha:").pack(pady=(10, 2))
+        self.entry_senha = tkk.Entry(self.janela, width=30, show="*")
         self.entry_senha.pack(pady=5)
 
         # Botão Entrar
-        ttk.Button(self.janela, text="Entrar", bootstyle="success", command=self._login)\
+        tkk.Button(self.janela, text="Entrar", bootstyle="success", command=self._login)\
           .pack(pady=20, ipadx=8, ipady=3)
 
         # para o botão enter funcionar na tela de login
@@ -66,11 +64,11 @@ class TelaLogin:
                 except:
                     pass
 
-                self.tela_principal = tk.Toplevel(self.janela)
+                self.tela_principal = tkk.Toplevel(self.janela)
                 self.tela_principal.title("Tela Principal")
-                TelaPrincipal.TelaPrincipal(self.tela_principal)
+                TelaPrincipal(self.tela_principal)
 
-                def _fechar_tudo():
+                def fechar_tudo():
                     try:
                         self.tela_principal.destroy()
                     except:
@@ -80,7 +78,7 @@ class TelaLogin:
                     except:
                         pass
 
-                self.tela_principal.protocol("WM_DELETE_WINDOW", _fechar_tudo)
+                self.tela_principal.protocol("WM_DELETE_WINDOW", fechar_tudo)
 
             else:
                 
@@ -91,6 +89,6 @@ class TelaLogin:
             Messagebox.show_error("Erro ao validar login:\n{}".format(ex), "Erro")
                
              
-gui = ttk.Window(themename='flatly')
+gui = tkk.Window(themename="flatly")
 TelaLogin(gui)
 gui.mainloop()
