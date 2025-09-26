@@ -83,14 +83,9 @@ class TelaPrincipal():
         self.carregar_dados_tabela()   # sem filtro; se quiser, passe um nome parcial que vai buscar diretamente um reagente pelo nome , vamos incrementar no futuro
 
     def carregar_dados_tabela(self, nome_parcial=None):
-        """Busca no banco e preenche a Treeview."""
-        # 1) Limpar a tabela
-        itens = self.tabela.get_children()
-        for item in itens:
-            self.tabela.delete(item)
 
         try:
-            # 2) Buscar dados via controller
+            # Buscar dados via controller usando o nome_parcial
             linhas = self.controller.listar_reagentes_localizacao(nome_parcial)
             print(linhas)
             # 3) Inserir no Treeview

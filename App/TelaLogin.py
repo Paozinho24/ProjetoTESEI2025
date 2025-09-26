@@ -8,7 +8,7 @@ from Model import Model
 class TelaLogin:
     def __init__(self, master):
         # Estilo e janela
-        self.style = tb.Style("flatly")
+        self.style = tb.Style()
         self.janela = master
         self.janela.title("Login")
         self.janela.geometry("400x300")
@@ -36,9 +36,10 @@ class TelaLogin:
         tb.Button(self.janela, text="Entrar", bootstyle="success", command=self._login)\
           .pack(pady=20, ipadx=8, ipady=3)
 
-        # Enter também envia
+        # para o botão enter funcionar na tela de login
         self.janela.bind("<Return>", lambda e: self._login())
 
+    #FUNÇÃO DE LOGIN E IGONORE ESSE _ NO COMEÇO TAVA COM SONO 
     def _login(self):
         cpf = self.entry_usuario.get()
         senha = self.entry_senha.get()
@@ -54,8 +55,9 @@ class TelaLogin:
             return
 
         try:
+            #VERIFICAÇÃO DO LOGIN COM OS DADOS DO BANCO
             ok = self.controller.login(cpf, senha)
-            
+            #ABRE A NOVA TELA SE TUDO FUNCIONAR
             if ok == True:
                 Messagebox.ok("Login realizado com sucesso!", "Sucesso", alert=False)
              
@@ -79,7 +81,6 @@ class TelaLogin:
                         pass
 
                 self.tela_principal.protocol("WM_DELETE_WINDOW", _fechar_tudo)
-                # <<< FIM DA ADIÇÃO
 
             else:
                 
