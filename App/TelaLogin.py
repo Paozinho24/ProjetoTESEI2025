@@ -1,5 +1,5 @@
 import tkinter as tk
-import ttkbootstrap as tb
+import ttkbootstrap as ttk
 import TelaPrincipal
 from ttkbootstrap.dialogs import Messagebox
 from Control import ControllerGeral
@@ -8,7 +8,7 @@ from Model import Model
 class TelaLogin:
     def __init__(self, master):
         # Estilo e janela
-        self.style = tb.Style()
+        self.style = ttk.Style()
         self.janela = master
         self.janela.title("Login")
         self.janela.geometry("400x300")
@@ -19,21 +19,21 @@ class TelaLogin:
         self.controller = ControllerGeral()
 
         # Título
-        tb.Label(self.janela, text="Faça login", font=("TkDefaultFont", 12, "bold")).pack(pady=(20, 10))
+        ttk.Label(self.janela, text="Faça login", font=("TkDefaultFont", 12, "bold")).pack(pady=(20, 10))
 
         # Usuário (CPF)
-        tb.Label(self.janela, text="Usuário (CPF):").pack(pady=(5, 2))
-        self.entry_usuario = tb.Entry(self.janela, width=30)
+        ttk.Label(self.janela, text="Usuário (CPF):").pack(pady=(5, 2))
+        self.entry_usuario = ttk.Entry(self.janela, width=30)
         self.entry_usuario.pack(pady=5)
         self.entry_usuario.focus()
 
         # Senha
-        tb.Label(self.janela, text="Senha:").pack(pady=(10, 2))
-        self.entry_senha = tb.Entry(self.janela, width=30, show="*")
+        ttk.Label(self.janela, text="Senha:").pack(pady=(10, 2))
+        self.entry_senha = ttk.Entry(self.janela, width=30, show="*")
         self.entry_senha.pack(pady=5)
 
         # Botão Entrar
-        tb.Button(self.janela, text="Entrar", bootstyle="success", command=self._login)\
+        ttk.Button(self.janela, text="Entrar", bootstyle="success", command=self._login)\
           .pack(pady=20, ipadx=8, ipady=3)
 
         # para o botão enter funcionar na tela de login
@@ -91,6 +91,6 @@ class TelaLogin:
             Messagebox.show_error("Erro ao validar login:\n{}".format(ex), "Erro")
                
              
-gui = tk.Tk()
+gui = ttk.Window(themename='flatly')
 TelaLogin(gui)
 gui.mainloop()
