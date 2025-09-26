@@ -1,6 +1,6 @@
 import Model
 
-class ControllerLogin:
+class ControllerGeral:
     def __init__(self):
         # model deve ser uma instância de Model
         self.Model = Model.Model()

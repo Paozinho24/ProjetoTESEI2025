@@ -1,7 +1,7 @@
 import tkinter as tk
 import ttkbootstrap as tb
 from ttkbootstrap.dialogs import Messagebox
-from Control import ControllerLogin
+from Control import ControllerGeral
 from Model import Model
 
 class TelaLogin:
@@ -13,9 +13,9 @@ class TelaLogin:
         self.janela.geometry("400x300")
         self.janela.resizable(False, False)
 
-        # MVC: instancia Model e Controller (sem gerar banco)
+     
         self.model = Model()
-        self.controller = ControllerLogin()
+        self.controller = ControllerGeral()
 
         # Título
         tb.Label(self.janela, text="Faça login", font=("TkDefaultFont", 12, "bold")).pack(pady=(20, 10))

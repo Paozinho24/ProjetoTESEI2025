@@ -2,13 +2,16 @@ import sqlite3
 from sqlite3 import Error
 
 class Conexao:
-    # Mantém sua forma de conexão simples
+   
     @staticmethod
     def ConectaBanco():
         try:
-            caminho = "BancoDeDados/BancoProjetoTese.db"  # relativo à pasta de execução
+            caminho = "BancoDeDados/BancoProjetoTese.db" 
             con = sqlite3.connect(caminho)
+            print("AAAAAAAAAAAAAAAAAAAAAAAAAA") 
             return con
         except Error as ex:
             print("Erro ao conectar:", ex)
             return None
+    
+ 
