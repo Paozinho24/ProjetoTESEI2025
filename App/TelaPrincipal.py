@@ -1,8 +1,12 @@
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
+from control import ControllerLogin
+from Model import Model
 
 class TelaPrincipal():
     def __init__(self, master):
+        self.model = Model()
+        self.controller = ControllerLogin(self.model)
         self.janela_tela_principal=master
 
         ##!!!!!!!!!!!!ESSA FUNÇÃO PODE DAR ERRO NO LINUX!!!!!!!!
