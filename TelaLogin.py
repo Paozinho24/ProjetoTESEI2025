@@ -41,7 +41,7 @@ class TelaLogin:
         # Enter também envia
         self.janela.bind("<Return>", lambda e: self._login())
 
-    # CONEXÃO COM O BRANCO BRABO
+    # CONEXÃO COM O BANCO BRABO
     def conexao_banco():
      
         caminho = "ProjetoTESEI2025\BancoDeDados\BancoProjetoTese.db"
