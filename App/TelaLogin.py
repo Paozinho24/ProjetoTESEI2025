@@ -1,6 +1,6 @@
 import ttkbootstrap as tkk
-from TelaPrincipal import TelaPrincipal
 from ttkbootstrap.dialogs import Messagebox
+from TelaPrincipal import TelaPrincipal
 from Control import ControllerGeral
 from Model import Model
 
@@ -12,8 +12,6 @@ class TelaLogin:
         self.janela.geometry("400x300")
         self.janela.resizable(False, False)
 
-     
-        self.model = Model()
         self.controller = ControllerGeral()
 
         # Título
