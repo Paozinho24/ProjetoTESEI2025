@@ -30,7 +30,7 @@ class Model:
                 pass
             
             
-    def listar_reagentes_localizacao(self, nome_parcial=None):
+    def listar_reagentes_localizacao(self):
           
             con = self.con.ConectaBanco()
             if con is None:
@@ -42,22 +42,18 @@ class Model:
                     SELECT
                         r.Id,
                         r.Nome,
-                        r.CAS,
-                        r.Formula,
-                        r.Unidade,
-                        COALESCE(l.Quantidade, 0)      AS Quantidade,
-                        COALESCE(l.Armario, '')         AS Armario,
-                        COALESCE(l.Prateleira, '')      AS Prateleira,
-                        COALESCE(l.Posicao, '')         AS Posicao
+                        COALESCE(r.CAS, ''),
+                        COALESCE(r.Formula, ''),
+                        COALESCE(r.Unidade, ''),
+                        COALESCE(l.Quantidade, 0),
+                        COALESCE(l.Armario, ''),
+                        COALESCE(l.Prateleira, ''),
+                        COALESCE(l.Posicao, '')
                     FROM Reagentes r
-                    LEFT JOIN Localizacao l ON l.Id = r.Id
-                """
-
+                    LEFT JOIN Localizacao l
+                        ON l.[fk_Reagentes_Localização] = r.Id
+                    """
                 params = ()
-                if nome_parcial is not None and nome_parcial.strip() != "":
-                    sql += " WHERE r.Nome LIKE ?"
-                    params = ("%{}%".format(nome_parcial.strip()),)
-
                 sql += " ORDER BY r.Nome;"
 
                 cursor.execute(sql, params)
@@ -68,3 +64,4 @@ class Model:
                             con.close()
                         except Exception:
                             pass
+

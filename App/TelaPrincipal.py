@@ -100,9 +100,10 @@ class TelaPrincipal():
         # === CARREGAR DADOS NA TABELA ===
         self.carregar_dados_tabela()
 
-    def carregar_dados_tabela(self, nome_parcial=None):
+    def carregar_dados_tabela(self):
         try:
-            linhas = self.controller.listar_reagentes_localizacao(nome_parcial)
+            linhas = self.controller.listar_reagentes_localizacao()
+            print(linhas)
             for linha in linhas:
                 self.tabela.insert('', 'end', values=(
                     linha[0], linha[1], linha[2], linha[3], linha[4],
@@ -110,3 +111,8 @@ class TelaPrincipal():
                 ))
         except Exception as ex:
             print("Erro ao carregar dados da tabela:", ex)
+
+
+gui = ttk.Window(themename="flatly")
+TelaPrincipal(gui)
+gui.mainloop()

@@ -1,4 +1,4 @@
-import ttkbootstrap as tkk
+import ttkbootstrap as ttk
 from ttkbootstrap.dialogs import Messagebox
 from TelaPrincipal import TelaPrincipal
 from Control import ControllerGeral
@@ -14,21 +14,21 @@ class TelaLogin:
         self.controller = ControllerGeral()
 
         # TítuloX
-        tkk.Label(self.janela, text="Faça login", font=("TkDefaultFont", 12, "bold")).pack(pady=(20, 10))
+        ttk.Label(self.janela, text="Faça login", font=("TkDefaultFont", 12, "bold")).pack(pady=(20, 10))
 
         # Usuário (CPF)
-        tkk.Label(self.janela, text="Usuário (CPF):").pack(pady=(5, 2))
-        self.entry_usuario = tkk.Entry(self.janela, width=30)
+        ttk.Label(self.janela, text="Usuário (CPF):").pack(pady=(5, 2))
+        self.entry_usuario = ttk.Entry(self.janela, width=30)
         self.entry_usuario.pack(pady=5)
         self.entry_usuario.focus()
 
         # Senha
-        tkk.Label(self.janela, text="Senha:").pack(pady=(10, 2))
-        self.entry_senha = tkk.Entry(self.janela, width=30, show="*")
+        ttk.Label(self.janela, text="Senha:").pack(pady=(10, 2))
+        self.entry_senha = ttk.Entry(self.janela, width=30, show="*")
         self.entry_senha.pack(pady=5)
 
         # Botão Entrar
-        tkk.Button(self.janela, text="Entrar", bootstyle="success", command=self._login)\
+        ttk.Button(self.janela, text="Entrar", bootstyle="success", command=self._login)\
           .pack(pady=20, ipadx=8, ipady=3)
 
         # para o botão enter funcionar na tela de login
@@ -61,7 +61,7 @@ class TelaLogin:
                 except:
                     pass
 
-                self.tela_principal = tkk.Toplevel(self.janela)
+                self.tela_principal = ttk.Toplevel(self.janela)
                 self.tela_principal.title("Tela Principal")
                 TelaPrincipal(self.tela_principal)
 
@@ -86,6 +86,6 @@ class TelaLogin:
             Messagebox.show_error("Erro ao validar login:\n{}".format(ex), "Erro")
                
              
-gui = tkk.Window(themename="flatly")
+gui = ttk.Window(themename="flatly")
 TelaLogin(gui)
 gui.mainloop()
