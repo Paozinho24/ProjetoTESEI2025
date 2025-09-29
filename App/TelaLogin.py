@@ -2,7 +2,6 @@ import ttkbootstrap as tkk
 from ttkbootstrap.dialogs import Messagebox
 from TelaPrincipal import TelaPrincipal
 from Control import ControllerGeral
-from Model import Model
 
 class TelaLogin:
     def __init__(self, master):
@@ -14,7 +13,7 @@ class TelaLogin:
 
         self.controller = ControllerGeral()
 
-        # Título
+        # TítuloX
         tkk.Label(self.janela, text="Faça login", font=("TkDefaultFont", 12, "bold")).pack(pady=(20, 10))
 
         # Usuário (CPF)

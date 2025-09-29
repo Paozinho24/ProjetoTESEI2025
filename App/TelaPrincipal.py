@@ -9,8 +9,11 @@ class TelaPrincipal():
         self.controller = ControllerGeral()
         self.janela_tela_principal = master
 
-        # Pode falhar no Linux; 
-        self.janela_tela_principal.state('zoomed')
+        # Pode falhar no Linux; não é crítico
+        try:
+            self.janela_tela_principal.state('zoomed')
+        except:
+            pass
 
         style = ttk.Style()
         style.configure('TButton', font=('TkDefaultFont', 12, 'bold'), padding=10)
@@ -18,91 +21,92 @@ class TelaPrincipal():
 
         self.janela_tela_principal.title('Tela Principal')
 
-        # Frames
-        self.frame_superior = ttk.Frame(self.janela_tela_principal, bootstyle='primary', height=130)
-        self.frame_logout = ttk.Frame(self.frame_superior, bootstyle='primary', height=130, width=200)
-        self.frame_inferior_botoes = ttk.Frame(self.janela_tela_principal, height=500, width=800)
-
-        # EstéticosFRESCOS
-        self.frame_azul_acima = ttk.Frame(self.janela_tela_principal, bootstyle='info', height=40)
-        self.frame_azul_direita = ttk.Frame(self.janela_tela_principal, bootstyle='info', width=20)
+        # --- MOLDURAS (bordas estéticas) ---
+        self.frame_azul_acima    = ttk.Frame(self.janela_tela_principal, bootstyle='info', height=40)
+        self.frame_azul_abaixo   = ttk.Frame(self.janela_tela_principal, bootstyle='info', height=20)
         self.frame_azul_esquerda = ttk.Frame(self.janela_tela_principal, bootstyle='info', width=20)
-        self.frame_azul_abaixo = ttk.Frame(self.janela_tela_principal, bootstyle='info', height=20)
+        self.frame_azul_direita  = ttk.Frame(self.janela_tela_principal, bootstyle='info', width=20)
 
-        # TABELA BRABA
+        # Pack das bordas PRIMEIRO
+        self.frame_azul_acima.pack(side='top', fill='x')
+        self.frame_azul_abaixo.pack(side='bottom', fill='x')
+        self.frame_azul_esquerda.pack(side='left', fill='y')
+        self.frame_azul_direita.pack(side='right', fill='y')
+
+        # --- CONTAINER CENTRAL que vai crescer e conter todo o conteúdo ---
+        container = ttk.Frame(self.janela_tela_principal)
+        container.pack(side='top', fill='both', expand=True)
+
+        # --- TOPO (barra superior) ---
+        self.frame_superior = ttk.Frame(container, bootstyle='primary')
+        self.frame_superior.pack(side='top', fill='x')
+        # NÃO force height fixo aqui; deixe o conteúdo determinar a altura
+
+        # Área logout dentro do topo
+        self.frame_logout = ttk.Frame(self.frame_superior, bootstyle='primary')
+        self.frame_logout.pack(side='right', padx=40, pady=10)
+        self.lbl_logout = ttk.Label(self.frame_logout, text='Olá, -NomeUsuario-',
+                                    bootstyle='inverse-primary',
+                                    font=('TkDefaultFont', 12, 'bold'))
+        self.lbl_logout.pack(side='left', padx=(0,10))
+        self.botao_logout = ttk.Button(self.frame_logout, text='Logout', bootstyle='secondary')
+        self.botao_logout.pack(side='left')
+
+        # --- MEIO (onde fica a TABELA) ---
+        area_meio = ttk.Frame(container)
+        area_meio.pack(side='top', fill='both', expand=True, padx=8, pady=8)
+
+        # TABELA
         self.tabela = ttk.Treeview(
-            self.janela_tela_principal,
+            area_meio,
             columns=['ID', 'Nome', 'CAS', 'Fórmula', 'Unidade', 'Quantidade', 'Armário', 'Prateleira', 'Posição'],
-            height=30,
             show='headings',
             bootstyle='dark'
         )
 
-        for coluna in self.tabela['columns']:
-            self.tabela.column(coluna, minwidth=0, width=170)
-
+        # Cabeçalhos e colunas
         for titulo in self.tabela['columns']:
             self.tabela.heading(titulo, text=titulo)
+        self.tabela.column('ID', width=80, anchor='center', stretch=False)
+        self.tabela.column('Nome', width=220)
+        self.tabela.column('CAS', width=120, anchor='center')
+        self.tabela.column('Fórmula', width=120, anchor='center')
+        self.tabela.column('Unidade', width=100, anchor='center')
+        self.tabela.column('Quantidade', width=120, anchor='center')
+        self.tabela.column('Armário', width=120, anchor='center')
+        self.tabela.column('Prateleira', width=120, anchor='center')
+        self.tabela.column('Posição', width=100, anchor='center')
 
-        #scrolbbar bolada demais
-        self.scrollbar_tabela = ttk.Scrollbar(self.janela_tela_principal, orient='vertical', command=self.tabela.yview)
+        # Scrollbar vertical (AGORA com pack)
+        self.scrollbar_tabela = ttk.Scrollbar(area_meio, orient='vertical', command=self.tabela.yview)
         self.tabela.configure(yscrollcommand=self.scrollbar_tabela.set)
 
-        # Labels e botões
-        self.lbl_logout = ttk.Label(self.frame_logout, text='Olá, -NomeUsuario-', bootstyle='inverse-primary', font=('TkDefaultFont', 12, 'bold'))
+        # Layout do miolo
+        self.tabela.pack(side='left', fill='both', expand=True)
+        self.scrollbar_tabela.pack(side='right', fill='y')
 
-        self.botao_logout = ttk.Button(self.frame_logout, text='Logout', bootstyle='secondary')
-        self.botao_cadastrar = ttk.Button(self.frame_inferior_botoes, text='Cadastrar', bootstyle='primary', width=15)
-        self.botao_retirar = ttk.Button(self.frame_inferior_botoes, text='Retirar', bootstyle='primary', width=15)
+        # --- RODAPÉ (botões inferiores) ---
+        self.frame_inferior_botoes = ttk.Frame(container)
+        self.frame_inferior_botoes.pack(side='bottom', fill='x', pady=(4, 8))
+
+        self.botao_cadastrar  = ttk.Button(self.frame_inferior_botoes, text='Cadastrar',  bootstyle='primary', width=15)
         self.botao_relatorios = ttk.Button(self.frame_inferior_botoes, text='Relatórios', bootstyle='primary', width=15)
+        self.botao_retirar    = ttk.Button(self.frame_inferior_botoes, text='Retirar',     bootstyle='primary', width=15)
 
-        # Packs
-        self.frame_superior.pack(side='top', fill='x')
-        self.frame_superior.pack_propagate(False)
-        self.frame_logout.pack(side='right', padx=40)
-        self.frame_logout.pack_propagate(False)
-        self.botao_logout.pack(side='bottom', pady=10)
-        self.lbl_logout.pack(side='bottom', pady=10)
-
-        self.frame_azul_abaixo.pack(side='bottom', fill='x')
-        self.frame_azul_acima.pack(side='top', fill='x')
-        self.frame_azul_direita.pack(side='right', fill='y')
-        self.frame_azul_esquerda.pack(side='left', fill='y')
-
-        self.frame_inferior_botoes.pack(side='bottom')
-        self.frame_inferior_botoes.pack_propagate(False)
-        self.botao_cadastrar.pack(side='left')
-        self.botao_retirar.pack(side='right')
-        self.botao_relatorios.pack(expand=True)
+        self.botao_cadastrar.pack(side='left', padx=8)
+        self.botao_relatorios.pack(side='left', padx=8)
+        self.botao_retirar.pack(side='right', padx=8)
 
         # === CARREGAR DADOS NA TABELA ===
-        self.carregar_dados_tabela()   # sem filtro; se quiser, passe um nome parcial que vai buscar diretamente um reagente pelo nome , vamos incrementar no futuro
+        self.carregar_dados_tabela()
 
     def carregar_dados_tabela(self, nome_parcial=None):
-
         try:
-            # Buscar dados via controller usando o nome_parcial
             linhas = self.controller.listar_reagentes_localizacao(nome_parcial)
-            print(linhas)
-            # 3) Inserir no Treeview
-            # Ordem precisa bater com self.tabela['columns']
             for linha in linhas:
-                # linha vem como tupla:
-                # (Id, Nome, CAS, Formula, Unidade, Quantidade, Armario, Prateleira, Posicao)
                 self.tabela.insert('', 'end', values=(
-                    linha[0],  # ID
-                    linha[1],  # Nome
-                    linha[2],  # CAS
-                    linha[3],  # Fórmula
-                    linha[4],  # Unidade
-                    linha[5],  # Quantidade
-                    linha[6],  # Armário
-                    linha[7],  # Prateleira
-                    linha[8],  # Posição
+                    linha[0], linha[1], linha[2], linha[3], linha[4],
+                    linha[5], linha[6], linha[7], linha[8]
                 ))
         except Exception as ex:
-            # Se quiser, exiba com Messagebox; aqui mantenho simples:
             print("Erro ao carregar dados da tabela:", ex)
-
-
-
