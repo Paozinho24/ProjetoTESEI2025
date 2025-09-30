@@ -3,7 +3,7 @@ import sqlite3
 
 class Model:
     def __init__(self):
-       
+    
         self.con = ConexaoBanco.Conexao()
 
     def validar_login(self, cpf, senha):

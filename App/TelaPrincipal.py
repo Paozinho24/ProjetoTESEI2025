@@ -67,6 +67,7 @@ class TelaPrincipal():
         # Cabeçalhos e colunas
         for titulo in self.tabela['columns']:
             self.tabela.heading(titulo, text=titulo)
+            
         self.tabela.column('ID', width=80, anchor='center', stretch=False)
         self.tabela.column('Nome', width=220)
         self.tabela.column('CAS', width=120, anchor='center')
@@ -113,6 +114,6 @@ class TelaPrincipal():
             print("Erro ao carregar dados da tabela:", ex)
 
 
-gui = ttk.Window(themename="flatly")
-TelaPrincipal(gui)
-gui.mainloop()
+# gui = ttk.Window(themename="flatly")
+# TelaPrincipal(gui)
+# gui.mainloop()
