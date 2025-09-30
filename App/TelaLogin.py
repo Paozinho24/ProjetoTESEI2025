@@ -85,7 +85,7 @@ class TelaLogin:
             if ok:
                 if self.var_lembrar.get():
                     self.salvarUsuario(cpf)
-
+                    nome = self.controller.getNomeUsuario(cpf) or "Usuário"
                 Messagebox.ok("Login realizado com sucesso!", "Sucesso", alert=False)
 
                 try:
@@ -95,7 +95,7 @@ class TelaLogin:
 
                 self.tela_principal = ttk.Toplevel(self.janela)
                 self.tela_principal.title("Tela Principal")
-                TelaPrincipal(self.tela_principal)
+                TelaPrincipal(self.tela_principal,nome_usuario=nome)
 
                 def fechar_tudo():
                     try:

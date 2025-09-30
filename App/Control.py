@@ -20,3 +20,9 @@ class ControllerGeral:
 
     def listar_reagentes_localizacao(self):
         return self.Model.listar_reagentes_localizacao()
+    
+    def cadastrar_Reagente(self,nome,formula=None,cas=None,unidade=None,quantidade=None,armario=None,prateleira=None,posicao=None, id=None):
+        return self.Model.cadastrar_Reagente(nome, formula, cas, unidade, quantidade, armario, prateleira, posicao, id)
+    
+    def getNomeUsuario(self, cpf):
+        return self.Model.getNomeUsuario(cpf)

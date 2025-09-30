@@ -2,9 +2,11 @@ import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from Control import ControllerGeral
 from Model import Model
+from TelaCadastro import TelaCadastro
+
 
 class TelaPrincipal():
-    def __init__(self, master):
+    def __init__(self, master, nome_usuario="Usuário"):
         self.model = Model()
         self.controller = ControllerGeral()
         self.janela_tela_principal = master
@@ -33,26 +35,25 @@ class TelaPrincipal():
         self.frame_azul_esquerda.pack(side='left', fill='y')
         self.frame_azul_direita.pack(side='right', fill='y')
 
-        # --- CONTAINER CENTRAL que vai crescer e conter todo o conteúdo ---
+        # CONTAINER CENTRAL que vai crescer e conter todo o conteúdo 
         container = ttk.Frame(self.janela_tela_principal)
         container.pack(side='top', fill='both', expand=True)
 
-        # --- TOPO (barra superior) ---
+        # TOPO (barra superior) ---
         self.frame_superior = ttk.Frame(container, bootstyle='primary')
         self.frame_superior.pack(side='top', fill='x')
-        # NÃO force height fixo aqui; deixe o conteúdo determinar a altura
+        # NÃO force height fixo aqui!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!; deixe o conteúdo determinar a altura
 
         # Área logout dentro do topo
         self.frame_logout = ttk.Frame(self.frame_superior, bootstyle='primary')
         self.frame_logout.pack(side='right', padx=40, pady=10)
-        self.lbl_logout = ttk.Label(self.frame_logout, text='Olá, -NomeUsuario-',
-                                    bootstyle='inverse-primary',
-                                    font=('TkDefaultFont', 12, 'bold'))
+        self.lbl_logout = ttk.Label(self.frame_logout,text=f'Olá, {nome_usuario}',bootstyle='inverse-primary',font=('TkDefaultFont', 12, 'bold'))
+        self.lbl_logout.pack(side='bottom', pady=10)
         self.lbl_logout.pack(side='left', padx=(0,10))
         self.botao_logout = ttk.Button(self.frame_logout, text='Logout', bootstyle='secondary')
         self.botao_logout.pack(side='left')
 
-        # --- MEIO (onde fica a TABELA) ---
+        # MEIO (onde fica a TABELA) 
         area_meio = ttk.Frame(container)
         area_meio.pack(side='top', fill='both', expand=True, padx=8, pady=8)
 
@@ -90,7 +91,7 @@ class TelaPrincipal():
         self.frame_inferior_botoes = ttk.Frame(container)
         self.frame_inferior_botoes.pack(side='bottom', fill='x', pady=(4, 8))
 
-        self.botao_cadastrar  = ttk.Button(self.frame_inferior_botoes, text='Cadastrar',  bootstyle='primary', width=15)
+        self.botao_cadastrar  = ttk.Button(self.frame_inferior_botoes,text='Cadastrar', bootstyle='primary', width=15, command=self.abrirCadastro)
         self.botao_relatorios = ttk.Button(self.frame_inferior_botoes, text='Relatórios', bootstyle='primary', width=15)
         self.botao_retirar    = ttk.Button(self.frame_inferior_botoes, text='Retirar',     bootstyle='primary', width=15)
 
@@ -100,7 +101,18 @@ class TelaPrincipal():
 
         # === CARREGAR DADOS NA TABELA ===
         self.carregar_dados_tabela()
+        
+    def abrirCadastro(self):
+        # Abre a tela e, ao salvar, chama recarregarTabela
+        TelaCadastro(self.janela_tela_principal, self.controller, on_saved=self.recarregarTabela)
 
+    def recarregarTabela(self):
+        # Limpa e recarrega a Treeview
+        for item in self.tabela.get_children():
+            self.tabela.delete(item)
+        self.carregar_dados_tabela()
+
+# Carrega os dados da Tabela
     def carregar_dados_tabela(self):
         try:
             linhas = self.controller.listar_reagentes_localizacao()

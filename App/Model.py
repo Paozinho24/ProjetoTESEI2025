@@ -13,6 +13,7 @@ class Model:
             raise sqlite3.Error("Sem conexão csom o banco de dados.")
 
         try:
+            print("PASSEI AQUI")
             cursor = con.cursor()
             sql = "SELECT 1 FROM Tecnicos WHERE CPF = ? AND Senha = ?"
             parametros = (cpf, senha)
@@ -65,3 +66,50 @@ class Model:
                         except Exception:
                             pass
 
+    def cadastrar_Reagente(self, nome, formula=None, cas=None, unidade=None, quantidade=None, armario=None, prateleira=None, posicao=None, id=None):
+
+        con = self.con.ConectaBanco()
+        #verificação se banco tá rodando 
+        
+        if con is None:
+            raise sqlite3.Error("Sem conexão com o banco de dados.")
+
+        try:
+            cur = con.cursor()
+
+            # Gera próximo Id 
+            if id is None:
+                cur.execute("SELECT COALESCE(MAX(Id), 0) + 1 FROM Reagentes")
+                id = cur.fetchone()[0]
+
+            # Inserir reagente
+            cur.execute( "INSERT INTO Reagentes (Id, Nome, Formula, CAS, Unidade) VALUES (?, ?, ?, ?, ?)", (id, nome, formula, cas, unidade))
+
+            # Inserir localização
+            if any(v is not None for v in (posicao, prateleira, armario, quantidade)):
+                cur.execute(
+                    'INSERT INTO Localizacao ([fk_Reagentes_Localização], Posicao, Prateleira, Armario, Quantidade) '
+                    'VALUES (?, ?, ?, ?, ?)',
+                    (id, posicao or "", prateleira or "", armario or "", quantidade or 0)
+                )
+
+            con.commit()
+            return id
+
+        except Exception:
+            con.rollback()
+            raise
+        finally:
+            try:
+                con.close()
+            except Exception:
+                pass
+            
+    # PARA O NOME DO USUÁRIO APARECER NA TELA PRINCIPAL
+    def getNomeUsuario(self, cpf: str) -> str:
+        con = self.con.ConectaBanco()
+        cur = con.cursor()
+        cur.execute("SELECT Nome FROM Tecnicos WHERE CPF = ? LIMIT 1", (cpf,))
+        row = cur.fetchone()
+        con.close()
+        return row[0] 
