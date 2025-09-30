@@ -1,120 +1,94 @@
-import tkinter as tk
-import ttkbootstrap as ttk
-from ttkbootstrap.dialogs import Messagebox
+import ttkbootstrap as tkk
 from TelaPrincipal import TelaPrincipal
+from ttkbootstrap.dialogs import Messagebox
 from Control import ControllerGeral
-
-ARQ_USUARIO = "ultimo_usuario.txt"
+from Model import Model
 
 class TelaLogin:
     def __init__(self, master):
+        # Estilo e janela
         self.janela = master
         self.janela.title("Login")
-        self.janela.geometry("400x320")
+        self.janela.geometry("400x300")
         self.janela.resizable(False, False)
 
+     
+        self.model = Model()
         self.controller = ControllerGeral()
 
-        ttk.Label(self.janela, text="Faça login", font=("TkDefaultFont", 12, "bold")).pack(pady=(20, 10))
+        # Título
+        tkk.Label(self.janela, text="Faça login", font=("TkDefaultFont", 12, "bold")).pack(pady=(20, 10))
 
-        ttk.Label(self.janela, text="Usuário (CPF):").pack(pady=(5, 2))
-        self.entry_usuario = ttk.Entry(self.janela, width=30)
+        # Usuário (CPF)
+        tkk.Label(self.janela, text="Usuário (CPF):").pack(pady=(5, 2))
+        self.entry_usuario = tkk.Entry(self.janela, width=30)
         self.entry_usuario.pack(pady=5)
-        self.carregarUsuario()  # preenche se existir
         self.entry_usuario.focus()
 
-        ttk.Label(self.janela, text="Senha:").pack(pady=(10, 2))
-        self.entry_senha = ttk.Entry(self.janela, width=30, show="*")
+        # Senha
+        tkk.Label(self.janela, text="Senha:").pack(pady=(10, 2))
+        self.entry_senha = tkk.Entry(self.janela, width=30, show="*")
         self.entry_senha.pack(pady=5)
 
-        # Mostrar senha (simples)
-        self.var_mostrar = tk.BooleanVar(value=False)
-        ttk.Checkbutton(self.janela, text="Mostrar senha",
-                        variable=self.var_mostrar, command=self.toggleSenha)\
-           .pack(pady=(2, 6))
+        # Botão Entrar
+        tkk.Button(self.janela, text="Entrar", bootstyle="success", command=self._login)\
+          .pack(pady=20, ipadx=8, ipady=3)
 
-        # Lembrar usuário (simples)
-        self.var_lembrar = tk.BooleanVar(value=True)
-        ttk.Checkbutton(self.janela, text="Lembrar usuário",
-                        variable=self.var_lembrar)\
-           .pack(pady=(0, 8))
+        # para o botão enter funcionar na tela de login
+        self.janela.bind("<Return>", lambda e: self._login())
 
-        ttk.Button(self.janela, text="Entrar", bootstyle="success", command=self.login)\
-          .pack(pady=10, ipadx=8, ipady=3)
-
-        self.janela.bind("<Return>", lambda e: self.login())
-
-    def toggleSenha(self):
-        """Mostra/oculta os caracteres da senha."""
-        self.entry_senha.configure(show="" if self.var_mostrar.get() else "*")
-
-    def carregarUsuario(self):
-        """Carrega o último CPF salvo (se existir) e preenche o campo."""
-        try:
-            with open(ARQ_USUARIO, "r", encoding="utf-8") as f:
-                cpf = f.read().strip()
-                if cpf:
-                    self.entry_usuario.insert(0, cpf)
-        except Exception:
-            pass
-
-    def salvarUsuario(self, cpf: str):
-        """Salva o último CPF em arquivo texto simples."""
-        try:
-            with open(ARQ_USUARIO, "w", encoding="utf-8") as f:
-                f.write((cpf or "").strip())
-        except Exception:
-            pass
-
-    def login(self):
-        """Valida os campos, autentica no Controller e abre a tela principal."""
+    #FUNÇÃO DE LOGIN E IGONORE ESSE _ NO COMEÇO TAVA COM SONO 
+    def _login(self):
         cpf = self.entry_usuario.get()
         senha = self.entry_senha.get()
 
-        if not cpf.strip():
+        if cpf is None or cpf.strip() == "":
             Messagebox.show_warning("Informe o CPF.", "Atenção")
             self.entry_usuario.focus()
             return
-        if not senha:
+
+        if senha is None or senha == "":
             Messagebox.show_warning("Informe a senha.", "Atenção")
             self.entry_senha.focus()
             return
 
         try:
+            #VERIFICAÇÃO DO LOGIN COM OS DADOS DO BANCO
             ok = self.controller.login(cpf, senha)
-            if ok:
-                if self.var_lembrar.get():
-                    self.salvarUsuario(cpf)
-
+            #ABRE A NOVA TELA SE TUDO FUNCIONAR
+            if ok == True:
                 Messagebox.ok("Login realizado com sucesso!", "Sucesso", alert=False)
-
+             
                 try:
                     self.janela.withdraw()
-                except Exception:
+                except:
                     pass
 
-                self.tela_principal = ttk.Toplevel(self.janela)
+                self.tela_principal = tkk.Toplevel(self.janela)
                 self.tela_principal.title("Tela Principal")
                 TelaPrincipal(self.tela_principal)
 
                 def fechar_tudo():
                     try:
                         self.tela_principal.destroy()
-                    except Exception:
+                    except:
                         pass
                     try:
                         self.janela.destroy()
-                    except Exception:
+                    except:
                         pass
 
                 self.tela_principal.protocol("WM_DELETE_WINDOW", fechar_tudo)
+
             else:
+                
                 Messagebox.show_error("CPF ou senha incorretos.", "Acesso negado")
+                
         except Exception as ex:
-            Messagebox.show_error(f"Erro ao validar login:\n{ex}", "Erro")
-
-
-
-gui = ttk.Window(themename="flatly")
+            
+            Messagebox.show_error("Erro ao validar login:\n{}".format(ex), "Erro")
+               
+             
+gui = tkk.Window(themename="flatly")
 TelaLogin(gui)
 gui.mainloop()

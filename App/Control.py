@@ -18,5 +18,5 @@ class ControllerGeral:
 
         return self.Model.validar_login(cpf, senha)
 
-    def listar_reagentes_localizacao(self):
-        return self.Model.listar_reagentes_localizacao()
+    def listar_reagentes_localizacao(self, nome_parcial=None):
+        return self.Model.listar_reagentes_localizacao(nome_parcial)
