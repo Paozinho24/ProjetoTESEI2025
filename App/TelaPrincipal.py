@@ -6,7 +6,7 @@ from TelaCadastro import TelaCadastro
 
 
 class TelaPrincipal():
-    def __init__(self, master, nome_usuario="Usuário"):
+    def __init__(self, master, nome_usuario="Usuário", cpf_usuario=None):
         self.model = Model()
         self.controller = ControllerGeral()
         self.janela_tela_principal = master
@@ -39,7 +39,7 @@ class TelaPrincipal():
         container = ttk.Frame(self.janela_tela_principal)
         container.pack(side='top', fill='both', expand=True)
 
-        # TOPO (barra superior) ---
+        # TOPO (barra superior) 
         self.frame_superior = ttk.Frame(container, bootstyle='primary')
         self.frame_superior.pack(side='top', fill='x')
         # NÃO force height fixo aqui!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!; deixe o conteúdo determinar a altura
@@ -50,8 +50,15 @@ class TelaPrincipal():
         self.lbl_logout = ttk.Label(self.frame_logout,text=f'Olá, {nome_usuario}',bootstyle='inverse-primary',font=('TkDefaultFont', 12, 'bold'))
         self.lbl_logout.pack(side='bottom', pady=10)
         self.lbl_logout.pack(side='left', padx=(0,10))
-        self.botao_logout = ttk.Button(self.frame_logout, text='Logout', bootstyle='secondary')
+        self.botao_logout = ttk.Button(self.frame_logout, text='Logout', bootstyle='secondary', command=self.logout)
         self.botao_logout.pack(side='left')
+        # Se for admin (CPF padrão 00000000000), adiciona botão de gerenciamento de usuários
+        try:
+            if cpf_usuario == '00000000000':
+                self.botao_admin = ttk.Button(self.frame_logout, text='Usuários', bootstyle='warning', command=self.abrirTelaUsuarios)
+                self.botao_admin.pack(side='left', padx=(8,0))
+        except Exception:
+            pass
 
         # MEIO (onde fica a TABELA) 
         area_meio = ttk.Frame(container)
@@ -93,18 +100,59 @@ class TelaPrincipal():
 
         self.botao_cadastrar  = ttk.Button(self.frame_inferior_botoes,text='Cadastrar', bootstyle='primary', width=15, command=self.abrirCadastro)
         self.botao_relatorios = ttk.Button(self.frame_inferior_botoes, text='Relatórios', bootstyle='primary', width=15)
+        self.botao_editar = ttk.Button(self.frame_inferior_botoes, text='Editar', bootstyle="Warning" , width=15 , padding=(10))
         self.botao_retirar    = ttk.Button(self.frame_inferior_botoes, text='Retirar',     bootstyle='primary', width=15)
+
 
         self.botao_cadastrar.pack(side='left', padx=8)
         self.botao_relatorios.pack(side='left', padx=8)
+        self.botao_editar.pack(side="left", padx=8)
         self.botao_retirar.pack(side='right', padx=8)
 
         # === CARREGAR DADOS NA TABELA ===
         self.carregar_dados_tabela()
         
+        
+    # #Funções de da Tela
+    def logout(self):
+    
+        # Tenta recuperar a janela pai (se existir)
+        TelaPai = self.janela_tela_principal.master if hasattr(self.janela_tela_principal, 'master') else None
+
+        # Destrói a janela principal atual
+        try:
+            self.janela_tela_principal.destroy()
+        except Exception:
+            pass
+
+        # Se houver janela pai, tenta reexibi-la e limpar a senha
+        if TelaPai:
+            try:
+                TelaPai.deiconify()
+                TelaPai.lift()
+            except Exception:
+                pass
+
+            # Se a instância do login estiver exposta, chame o helper
+            if hasattr(TelaPai, 'tela_instance'):
+                tela_inst = TelaPai.tela_instance
+                if hasattr(tela_inst, 'voltar_para_login'):
+                    try:
+                        tela_inst.voltar_para_login()
+                    except Exception:
+                        pass
+            
     def abrirCadastro(self):
         # Abre a tela e, ao salvar, chama recarregarTabela
         TelaCadastro(self.janela_tela_principal, self.controller, on_saved=self.recarregarTabela)
+
+    def abrirTelaUsuarios(self):
+        try:
+            topo = ttk.Toplevel(self.janela_tela_principal)
+            from TelaUsuarios import TelaUsuarios
+            TelaUsuarios(topo)
+        except Exception as ex:
+            print('Erro ao abrir TelaUsuarios:', ex)
 
     def recarregarTabela(self):
         # Limpa e recarrega a Treeview

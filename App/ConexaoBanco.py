@@ -8,7 +8,7 @@ class Conexao:
         try:
             caminho = "BancoDeDados/BancoProjetoTese.db" 
             con = sqlite3.connect(caminho)
-            print("AAAAAAAAAAAAAAAAAAAAAAAAAA") 
+            print("Solicitou algo do Banco") 
             return con
         except Error as ex:
             print("Erro ao conectar:", ex)

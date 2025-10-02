@@ -13,7 +13,7 @@ class Model:
             raise sqlite3.Error("Sem conexão csom o banco de dados.")
 
         try:
-            print("PASSEI AQUI")
+            # print("PASSEI AQUI")
             cursor = con.cursor()
             sql = "SELECT 1 FROM Tecnicos WHERE CPF = ? AND Senha = ?"
             parametros = (cpf, senha)
@@ -113,3 +113,85 @@ class Model:
         row = cur.fetchone()
         con.close()
         return row[0] 
+
+    # ListaOsUsuáriosDoSistema
+    def listar_tecnicos(self):
+        con = self.con.ConectaBanco()
+        try:
+            cur = con.cursor()
+            cur.execute("SELECT Nome, CPF, Senha, Email FROM Tecnicos ORDER BY Nome")
+            return cur.fetchall()
+        finally:
+            try:
+                con.close()
+            except Exception:
+                pass
+    #
+    def PegarCPF(self, cpf):
+        con = self.con.ConectaBanco()
+        try:
+            cur = con.cursor()
+            cur.execute("SELECT Nome, CPF, Senha, Email FROM Tecnicos WHERE CPF = ? LIMIT 1", (cpf,))
+            return cur.fetchone()
+        finally:
+            try:
+                con.close()
+            except Exception:
+                pass
+
+    def inserir_tecnico(self, nome, cpf, senha, email=None):
+        con = self.con.ConectaBanco()
+        try:
+            cur = con.cursor()
+            cur.execute("INSERT INTO Tecnicos (Nome, CPF, Senha, Email) VALUES (?, ?, ?, ?)", (nome, cpf, senha, email))
+            con.commit()
+            return True
+        except Exception:
+            try:
+                con.rollback()
+            except Exception:
+                pass
+            raise
+        finally:
+            try:
+                con.close()
+            except Exception:
+                pass
+
+    def atualizar_tecnico(self, nome, cpf, senha, email, original_cpf):
+        con = self.con.ConectaBanco()
+        try:
+            cur = con.cursor()
+            cur.execute("UPDATE Tecnicos SET Nome = ?, CPF = ?, Senha = ?, Email = ? WHERE CPF = ?", (nome, cpf, senha, email, original_cpf))
+            con.commit()
+            return True
+        except Exception:
+            try:
+                con.rollback()
+            except Exception:
+                pass
+            raise
+        finally:
+            try:
+                con.close()
+            except Exception:
+                pass
+
+    def deletar_tecnico(self, cpf):
+        con = self.con.ConectaBanco()
+        try:
+            cur = con.cursor()
+            cur.execute("DELETE FROM Tecnicos WHERE CPF = ?", (cpf,))
+            con.commit()
+            return True
+        except Exception:
+            try:
+                con.rollback()
+            except Exception:
+                pass
+            raise
+        finally:
+            try:
+                con.close()
+            except Exception:
+                pass

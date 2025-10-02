@@ -26,3 +26,19 @@ class ControllerGeral:
     
     def getNomeUsuario(self, cpf):
         return self.Model.getNomeUsuario(cpf)
+
+    # Usuários (Tecnicos) CRUD
+    def listar_tecnicos(self):
+        return self.Model.listar_tecnicos()
+    # FunçãoApenas para pegar o CPF
+    def PegarCPF(self, cpf):
+        return self.Model.PegarCPF(cpf)
+
+    def inserir_tecnico(self, nome, cpf, senha, email=None):
+        return self.Model.inserir_tecnico(nome, cpf, senha, email)
+
+    def atualizar_tecnico(self, nome, cpf, senha, email, original_cpf):
+        return self.Model.atualizar_tecnico(nome, cpf, senha, email, original_cpf)
+
+    def deletar_tecnico(self, cpf):
+        return self.Model.deletar_tecnico(cpf)

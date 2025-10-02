@@ -1,4 +1,4 @@
-import tkinter as tk
+
 import ttkbootstrap as ttk
 from ttkbootstrap.dialogs import Messagebox
 from TelaPrincipal import TelaPrincipal
@@ -12,7 +12,12 @@ class TelaLogin:
         self.janela.title("Login")
         self.janela.geometry("400x320")
         self.janela.resizable(False, False)
-
+        # expõe a instância para que outras janelas (ex: TelaPrincipal)
+        # possam chamar helpers como voltar_para_login()
+        try:
+            self.janela.tela_instance = self
+        except Exception:
+            pass
         self.controller = ControllerGeral()
 
         ttk.Label(self.janela, text="Faça login", font=("TkDefaultFont", 12, "bold")).pack(pady=(20, 10))
@@ -28,24 +33,34 @@ class TelaLogin:
         self.entry_senha.pack(pady=5)
 
         # Mostrar senha (simples)
-        self.var_mostrar = tk.BooleanVar(value=False)
-        ttk.Checkbutton(self.janela, text="Mostrar senha",
-                        variable=self.var_mostrar, command=self.toggleSenha)\
-           .pack(pady=(2, 6))
+        self.var_mostrar = ttk.BooleanVar(value=False)
+        ttk.Checkbutton(self.janela, text="Mostrar senha",variable=self.var_mostrar, command=self.MostrarSenha).pack(pady=(2, 6))
 
         # Lembrar usuário (simples)
-        self.var_lembrar = tk.BooleanVar(value=True)
-        ttk.Checkbutton(self.janela, text="Lembrar usuário",
-                        variable=self.var_lembrar)\
-           .pack(pady=(0, 8))
+        self.var_lembrar = ttk.BooleanVar(value=True)
+        ttk.Checkbutton(self.janela, text="Lembrar usuário", variable=self.var_lembrar).pack(pady=(0, 8))
 
-        ttk.Button(self.janela, text="Entrar", bootstyle="success", command=self.login)\
-          .pack(pady=10, ipadx=8, ipady=3)
+        ttk.Button(self.janela, text="Entrar", bootstyle="success", command=self.login).pack(pady=10, ipadx=8, ipady=3)
 
         self.janela.bind("<Return>", lambda e: self.login())
 
-    def toggleSenha(self):
-        """Mostra/oculta os caracteres da senha."""
+    def voltar_para_login(self):
+        """Mostra a TelaLogin novamente e limpa a senha."""
+        try:
+            self.entry_senha.delete(0, 'end')
+        except Exception:
+            pass
+        try:
+            self.janela.deiconify()
+            self.janela.lift()
+        except Exception:
+            pass
+        try:
+            self.entry_usuario.focus_set()
+        except Exception:
+            pass
+        
+    def MostrarSenha(self):
         self.entry_senha.configure(show="" if self.var_mostrar.get() else "*")
 
     def carregarUsuario(self):
@@ -95,7 +110,7 @@ class TelaLogin:
 
                 self.tela_principal = ttk.Toplevel(self.janela)
                 self.tela_principal.title("Tela Principal")
-                TelaPrincipal(self.tela_principal,nome_usuario=nome)
+                TelaPrincipal(self.tela_principal, nome_usuario=nome, cpf_usuario=cpf)
 
                 def fechar_tudo():
                     try:
@@ -112,7 +127,6 @@ class TelaLogin:
                 Messagebox.show_error("CPF ou senha incorretos.", "Acesso negado")
         except Exception as ex:
             Messagebox.show_error(f"Erro ao validar login:\n{ex}", "Erro")
-
 
 
 gui = ttk.Window(themename="flatly")
