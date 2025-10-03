@@ -120,7 +120,19 @@ class Model:
         try:
             cur = con.cursor()
             cur.execute("SELECT Nome, CPF, Senha, Email FROM Tecnicos ORDER BY Nome")
-            return cur.fetchall()
+            rows = cur.fetchall()
+            formatted = []
+            for r in rows:
+                nome = r[0]
+                cpf = r[1]
+                senha = r[2] if len(r) > 2 else None
+                email = r[3] if len(r) > 3 else None
+                try:
+                    cpf_str = str(cpf).zfill(11)
+                except Exception:
+                    cpf_str = str(cpf)
+                formatted.append((nome, cpf_str, senha, email))
+            return formatted
         finally:
             try:
                 con.close()
@@ -132,7 +144,18 @@ class Model:
         try:
             cur = con.cursor()
             cur.execute("SELECT Nome, CPF, Senha, Email FROM Tecnicos WHERE CPF = ? LIMIT 1", (cpf,))
-            return cur.fetchone()
+            row = cur.fetchone()
+            if not row:
+                return None
+            nome = row[0]
+            cpf_val = row[1]
+            senha = row[2] if len(row) > 2 else None
+            email = row[3] if len(row) > 3 else None
+            try:
+                cpf_str = str(cpf_val).zfill(11)
+            except Exception:
+                cpf_str = str(cpf_val)
+            return (nome, cpf_str, senha, email)
         finally:
             try:
                 con.close()

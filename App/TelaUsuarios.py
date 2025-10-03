@@ -75,8 +75,14 @@ class TelaUsuarios:
         try:
             self.entry_nome.delete(0, 'end')
             self.entry_nome.insert(0, vals[0])
+            # Garantir que o CPF seja mostrado com zeros à esquerda (11 dígitos)
+            cpf_val = vals[1]
+            try:
+                cpf_str = str(cpf_val).zfill(11)
+            except Exception:
+                cpf_str = str(cpf_val)
             self.entry_cpf.delete(0, 'end')
-            self.entry_cpf.insert(0, vals[1])
+            self.entry_cpf.insert(0, cpf_str)
             self.entry_senha.delete(0, 'end')
             self.entry_senha.insert(0, vals[2])
             self.entry_email.delete(0, 'end')
