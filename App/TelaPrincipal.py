@@ -54,7 +54,7 @@ class TelaPrincipal():
         self.botao_logout.pack(side='left')
         # Se for admin (CPF padrão 00000000000), adiciona botão de gerenciamento de usuários
         try:
-            if cpf_usuario == '00000000000':
+            if cpf_usuario == 'admin':
                 self.botao_admin = ttk.Button(self.frame_logout, text='Usuários', bootstyle='warning', command=self.abrirTelaUsuarios)
                 self.botao_admin.pack(side='left', padx=(8,0))
         except Exception:

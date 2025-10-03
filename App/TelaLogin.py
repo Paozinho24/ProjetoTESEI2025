@@ -101,7 +101,7 @@ class TelaLogin:
                 if self.var_lembrar.get():
                     self.salvarUsuario(cpf)
                     nome = self.controller.getNomeUsuario(cpf) or "Usuário"
-                Messagebox.ok("Login realizado com sucesso!", "Sucesso", alert=False)
+                # Messagebox.ok("Login realizado com sucesso!", "Sucesso", alert=False)
 
                 try:
                     self.janela.withdraw()

@@ -1,7 +1,7 @@
 # TelaCadastro.py
 import tkinter as tk
+import threading
 import ttkbootstrap as ttk
-from ttkbootstrap.dialogs import Messagebox
 
 class TelaCadastro:
     def __init__(self, master, controller, on_saved=None):
@@ -15,8 +15,11 @@ class TelaCadastro:
         self.win = tk.Toplevel(master)
         self.win.title("Cadastrar Reagente")
         self.win.transient(master)
-        self.win.grab_set()
-        self.win.geometry("420x420")
+        # avoid modal grab that can block other dialogs; keep transient only
+        try:
+            self.win.geometry("420x420")
+        except Exception:
+            pass
 
         form = ttk.Frame(self.win, padding=12)
         form.pack(fill="both", expand=True)
@@ -56,8 +59,9 @@ class TelaCadastro:
         # Lê e valida
         nome   = self.ent_nome.get().strip()
         if not nome:
-            Messagebox.show_warning("Informe o Nome do reagente.", "Atenção")
-            self.ent_nome.focus(); return
+            print("Aviso: Informe o Nome do reagente.")
+            self.ent_nome.focus()
+            return
 
         formula= self.ent_formula.get().strip()
         cas= self.ent_cas.get().strip() 
@@ -70,24 +74,57 @@ class TelaCadastro:
             try:
                 quantidade = float(qtd_txt)
             except ValueError:
-                Messagebox.show_warning("Quantidade inválida. Use números (ex.: 250 ou 250,5).", "Atenção")
-                self.ent_qtd.focus(); 
+                print("Aviso: Quantidade inválida. Use números (ex.: 250 ou 250,5).")
+                self.ent_qtd.focus()
                 return
 
         armario= self.ent_armario.get().strip()
         prateleira= self.ent_prateleira.get().strip() 
         posicao= self.ent_posicao.get().strip() 
 
+        # Close this window first to avoid blocking the main loop
+        parent = getattr(self.win, 'master', None)
         try:
-            # Usa sua função SEM **kwargs (assinatura explícita)
-            novo_id = self.controller.cadastrar_Reagente(nome, formula, cas, unidade, quantidade, armario, prateleira, posicao, None )
-            Messagebox.ok(f"Reagente cadastrado (Id {novo_id}).", "Sucesso", alert=False)
+            try:
+                # try releasing grab if present
+                self.win.grab_release()
+            except Exception:
+                pass
+            try:
+                self.win.destroy()
+            except Exception:
+                pass
+        except Exception:
+            pass
 
-            # Atualiza tabela na tela principal
+        def _after_actions(novo_id=None, erro=None):
+            if erro is not None:
+                print('Erro ao cadastrar:', erro)
+            else:
+                print(f'Reagente cadastrado (Id {novo_id}).')
             if callable(self.on_saved):
-                self.on_saved()
+                try:
+                    self.on_saved()
+                except Exception as ex:
+                    print('Erro ao executar on_saved:', ex)
 
-            self.win.destroy()
+        def _do_save():
+            try:
+                novo_id = self.controller.cadastrar_Reagente(nome, formula, cas, unidade, quantidade, armario, prateleira, posicao, None )
+                if parent is not None:
+                    try:
+                        parent.after(0, lambda: _after_actions(novo_id, None))
+                    except Exception:
+                        _after_actions(novo_id, None)
+                else:
+                    _after_actions(novo_id, None)
+            except Exception as ex:
+                if parent is not None:
+                    try:
+                        parent.after(0, lambda: _after_actions(None, ex))
+                    except Exception:
+                        _after_actions(None, ex)
+                else:
+                    _after_actions(None, ex)
 
-        except Exception as ex:
-            Messagebox.show_error(f"Erro ao cadastrar:\n{ex}", "Erro")
+        threading.Thread(target=_do_save, daemon=True).start()
