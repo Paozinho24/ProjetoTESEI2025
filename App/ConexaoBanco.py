@@ -30,9 +30,21 @@ CREATE TABLE IF NOT EXISTS "Tecnicos" (
 	"Email" INTEGER NOT NULL,
 	PRIMARY KEY("Id" AUTOINCREMENT)
 );
-INSERT INTO Tecnicos (Nome, CPF, Senha, Email)
-VALUES ('admin', 'admin', 'admin', 'k.g.a2014@outlook.com');
-COMMIT;'''
+CREATE TABLE IF NOT EXISTS "Movimentacoes" (
+    "Id"            INTEGER PRIMARY KEY AUTOINCREMENT,
+    "Reagente_Id"   INTEGER NOT NULL,
+    "Motivo"        VARCHAR(200) NOT NULL,
+    "Responsavel"   VARCHAR(110) NOT NULL,
+    "Projeto"       VARCHAR(150),
+    "DataHora"      DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY("Reagente_Id") REFERENCES "Reagentes"("Id")
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
+);
+
+INSERT INTO "Tecnicos" ("Nome", "CPF", "Senha", "Email")
+VALUES ('admin', 'admin', 'admin2424', 'k.g.a2014@outlook.com');
+'''
 
 
 class Conexao:
