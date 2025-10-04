@@ -3,6 +3,7 @@ from ttkbootstrap.constants import *
 from Control import ControllerGeral
 from Model import Model
 from TelaCadastro import TelaCadastro
+from TelaEditarReagente import TelaEditarReagente
 
 
 class TelaPrincipal():
@@ -56,7 +57,7 @@ class TelaPrincipal():
         self.botao_logout.pack(side='left')
         # Se for admin (CPF padrão 00000000000), adiciona botão de gerenciamento de usuários
         try:
-            if cpf_usuario == '00000000000':
+            if cpf_usuario == 'admin':
                 self.botao_admin = ttk.Button(self.frame_logout, text='Usuários', bootstyle='warning', command=self.abrirTelaUsuarios)
                 self.botao_admin.pack(side='left', padx=(8,0))
         except Exception:
@@ -94,7 +95,7 @@ class TelaPrincipal():
 
         self.botao_cadastrar  = ttk.Button(self.frame_inferior_botoes,text='Cadastrar', bootstyle='primary', width=15, command=self.abrirCadastro)
         self.botao_relatorios = ttk.Button(self.frame_inferior_botoes, text='Relatórios', bootstyle='primary', width=15)
-        self.botao_editar = ttk.Button(self.frame_inferior_botoes, text='Editar', bootstyle="Warning" , width=15 , padding=(10))
+        self.botao_editar = ttk.Button(self.frame_inferior_botoes, text='Editar', bootstyle='warning' , width=15 , padding=(10), command=self.abrirEditar)
         self.botao_retirar    = ttk.Button(self.frame_inferior_botoes, text='Retirar',     bootstyle='primary', width=15)
 
 
@@ -148,6 +149,20 @@ class TelaPrincipal():
         except Exception as ex:
             print('Erro ao abrir TelaUsuarios:', ex)
 
+    def abrirEditar(self):
+        # Abre a tela de edição para o reagente selecionado na treeview
+        sel = self.tabela.selection()
+        if not sel:
+            print('Aviso: selecione um reagente para editar.')
+            return
+        try:
+            item = self.tabela.item(sel[0])
+            vals = item.get('values', ())
+            # Abre a tela de edição em top-level
+            TelaEditarReagente(self.janela_tela_principal, self.controller, vals, on_saved=self.recarregarTabela)
+        except Exception as ex:
+            print('Erro ao abrir a tela de edição:', ex)
+
     def recarregarTabela(self):
         # Limpa e recarrega a Treeview
         for item in self.tabela.get_children():
@@ -181,4 +196,6 @@ class TelaPrincipal():
             print("Erro ao carregar dados da tabela:", ex)
 
 
-
+# gui = ttk.Window(themename="flatly")
+# TelaPrincipal(gui)
+# gui.mainloop()

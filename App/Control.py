@@ -23,6 +23,9 @@ class ControllerGeral:
     
     def cadastrar_Reagente(self,nome,formula=None,cas=None,unidade=None,quantidade=None,armario=None,prateleira=None,posicao=None, id=None):
         return self.Model.cadastrar_Reagente(nome, formula, cas, unidade, quantidade, armario, prateleira, posicao, id)
+
+    def atualizar_Reagente(self, id, nome, formula=None, cas=None, unidade=None, quantidade=None, armario=None, prateleira=None, posicao=None):
+        return self.Model.atualizar_Reagente(id, nome, formula, cas, unidade, quantidade, armario, prateleira, posicao)
     
     def getNomeUsuario(self, cpf):
         return self.Model.getNomeUsuario(cpf)
