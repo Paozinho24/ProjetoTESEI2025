@@ -104,7 +104,7 @@ class TelaUsuarios:
         email = self.entry_email.get()
         parent = self.janela
 
-        def _after_success():
+        def PosRodar():
             try:
                 self.carregar_lista()
             except Exception as ex:
@@ -114,22 +114,21 @@ class TelaUsuarios:
             except Exception as ex:
                 print('Erro ao limpar form após salvar:', ex)
 
-        def _do_save():
+        def Salvar():
             try:
                 VerificadorDoCpf = self.controller.PegarCPF(cpf)
                 if VerificadorDoCpf:
                     self.controller.atualizar_tecnico(nome, cpf, senha, email, cpf)
                 else:
                     self.controller.inserir_tecnico(nome, cpf, senha, email)
-                # schedule UI updates on main thread
                 try:
-                    parent.after(0, _after_success)
+                    parent.after(0, PosRodar)
                 except Exception:
-                    _after_success()
+                    PosRodar()
             except Exception as ex:
                 print('Erro ao Salvar_e_Editar usuario:', ex)
 
-        threading.Thread(target=_do_save, daemon=True).start()
+        threading.Thread(target=Salvar, daemon=True).start()
 
     def excluir(self):
         cpf = self.entry_cpf.get()
@@ -137,7 +136,7 @@ class TelaUsuarios:
             return
         parent = self.janela
 
-        def _do_delete():
+        def DeletaTecnico():
             try:
                 self.controller.deletar_tecnico(cpf)
                 try:
@@ -154,4 +153,4 @@ class TelaUsuarios:
             except Exception as ex:
                 print('Erro ao deletar usuario:', ex)
 
-        threading.Thread(target=_do_delete, daemon=True).start()
+        threading.Thread(target=DeletaTecnico, daemon=True).start()
