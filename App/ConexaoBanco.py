@@ -75,4 +75,3 @@ class Conexao:
         except Error as ex:
             print("Erro ao conectar:", ex)
             return None
-
