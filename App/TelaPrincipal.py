@@ -31,9 +31,6 @@ class TelaPrincipal():
         self.frame_azul_esquerda = ttk.Frame(self.janela_tela_principal, bootstyle='info', width=20)
         self.frame_azul_abaixo = ttk.Frame(self.janela_tela_principal, bootstyle='info', height=20)
 
-<<<<<<< HEAD
-        # TABELA BRABA
-=======
         # Pack das bordas PRIMEIRO
         self.frame_azul_acima.pack(side='top', fill='x')
         self.frame_azul_abaixo.pack(side='bottom', fill='x')
@@ -70,7 +67,6 @@ class TelaPrincipal():
         area_meio.pack(side='top', fill='both', expand=True, padx=8, pady=8)
 
         # TABELA
->>>>>>> TesteBackEnd
         self.tabela = ttk.Treeview(
             self.janela_tela_principal,
             columns=['ID', 'Nome', 'CAS', 'Fórmula', 'Unidade', 'Quantidade', 'Armário', 'Prateleira', 'Posição'],
@@ -92,37 +88,6 @@ class TelaPrincipal():
         # Labels e botões
         self.lbl_logout = ttk.Label(self.frame_logout, text='Olá, -NomeUsuario-', bootstyle='inverse-primary', font=('TkDefaultFont', 12, 'bold'))
 
-<<<<<<< HEAD
-        self.botao_logout = ttk.Button(self.frame_logout, text='Logout', bootstyle='secondary')
-        self.botao_cadastrar = ttk.Button(self.frame_inferior_botoes, text='Cadastrar', bootstyle='primary', width=15)
-        self.botao_retirar = ttk.Button(self.frame_inferior_botoes, text='Retirar', bootstyle='primary', width=15)
-        self.botao_relatorios = ttk.Button(self.frame_inferior_botoes, text='Relatórios', bootstyle='primary', width=15)
-
-        # Packs
-        self.frame_superior.pack(side='top', fill='x')
-        self.frame_superior.pack_propagate(False)
-        self.frame_logout.pack(side='right', padx=40)
-        self.frame_logout.pack_propagate(False)
-        self.botao_logout.pack(side='bottom', pady=10)
-        self.lbl_logout.pack(side='bottom', pady=10)
-
-        self.frame_azul_abaixo.pack(side='bottom', fill='x')
-        self.frame_azul_acima.pack(side='top', fill='x')
-        self.frame_azul_direita.pack(side='right', fill='y')
-        self.frame_azul_esquerda.pack(side='left', fill='y')
-
-        self.frame_inferior_botoes.pack(side='bottom')
-        self.frame_inferior_botoes.pack_propagate(False)
-        self.botao_cadastrar.pack(side='left')
-        self.botao_retirar.pack(side='right')
-        self.botao_relatorios.pack(expand=True)
-
-        # === CARREGAR DADOS NA TABELA ===
-        self.carregar_dados_tabela()   # sem filtro; se quiser, passe um nome parcial que vai buscar diretamente um reagente pelo nome , vamos incrementar no futuro
-
-    def carregar_dados_tabela(self, nome_parcial=None):
-
-=======
         # --- RODAPÉ (botões inferiores) ---
         self.frame_inferior_botoes = ttk.Frame(container)
         self.frame_inferior_botoes.pack(side='bottom', fill='x', pady=(4, 8))
@@ -191,7 +156,6 @@ class TelaPrincipal():
 
 # Carrega os dados da Tabela
     def carregar_dados_tabela(self):
->>>>>>> TesteBackEnd
         try:
             # Buscar dados via controller usando o nome_parcial
             linhas = self.controller.listar_reagentes_localizacao(nome_parcial)

@@ -18,10 +18,6 @@ class ControllerGeral:
 
         return self.Model.validar_login(cpf, senha)
 
-<<<<<<< HEAD
-    def listar_reagentes_localizacao(self, nome_parcial=None):
-        return self.Model.listar_reagentes_localizacao(nome_parcial)
-=======
     def listar_reagentes_localizacao(self):
         return self.Model.listar_reagentes_localizacao()
     
@@ -46,4 +42,3 @@ class ControllerGeral:
 
     def deletar_tecnico(self, cpf):
         return self.Model.deletar_tecnico(cpf)
->>>>>>> TesteBackEnd

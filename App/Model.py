@@ -68,9 +68,6 @@ class Model:
                         try:
                             con.close()
                         except Exception:
-<<<<<<< HEAD
-                            pass
-=======
                             pass
 
     def cadastrar_Reagente(self, nome, formula=None, cas=None, unidade=None, quantidade=None, armario=None, prateleira=None, posicao=None, id=None):
@@ -202,4 +199,3 @@ class Model:
                 con.close()
             except Exception:
                 pass
->>>>>>> TesteBackEnd
