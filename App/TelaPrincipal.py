@@ -173,7 +173,7 @@ class TelaPrincipal():
     def carregar_dados_tabela(self):
         try:
             # Buscar dados via controller usando o nome_parcial
-            linhas = self.controller.listar_reagentes_localizacao(nome_parcial)
+            linhas = self.controller.listar_reagentes_localizacao()
             print(linhas)
             # 3) Inserir no Treeview
             # Ordem precisa bater com self.tabela['columns']
