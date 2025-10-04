@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS "Tecnicos" (
 CREATE TABLE IF NOT EXISTS "Movimentacoes" (
     "Id"            INTEGER PRIMARY KEY AUTOINCREMENT,
     "Reagente_Id"   INTEGER NOT NULL,
+    "TipoDeMovimentacao" VARCHAR(200) NOT NULL,
     "Motivo"        VARCHAR(200) NOT NULL,
     "Responsavel"   VARCHAR(110) NOT NULL,
     "Projeto"       VARCHAR(150),

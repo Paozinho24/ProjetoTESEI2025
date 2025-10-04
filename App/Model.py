@@ -94,6 +94,16 @@ class Model:
                 )
 
             con.commit()
+            try:
+                # Registrar movimentação de cadastro
+                cur.execute('INSERT INTO Movimentacoes (Reagente_Id, TipoDeMovimentacao, Motivo, Responsavel, Projeto) VALUES (?, ?, ?, ?, ?)',
+                            (id, 'Cadastro', 'Cadastro', 'Sistema', None))
+                con.commit()
+            except Exception:
+                try:
+                    con.rollback()
+                except Exception:
+                    pass
             return id
 
         except Exception:
@@ -135,6 +145,16 @@ class Model:
                                 (id, posicao or "", prateleira or "", armario or "", quantidade or 0))
 
             con.commit()
+            try:
+                # Registrar movimentação de atualização
+                cur.execute('INSERT INTO Movimentacoes (Reagente_Id, TipoDeMovimentacao, Motivo, Responsavel, Projeto) VALUES (?, ?, ?, ?, ?)',
+                            (id, 'Atualização', 'Atualização', 'Sistema', None))
+                con.commit()
+            except Exception:
+                try:
+                    con.rollback()
+                except Exception:
+                    pass
             return True
         except Exception:
             try:
