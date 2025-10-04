@@ -104,6 +104,49 @@ class Model:
                 con.close()
             except Exception:
                 pass
+    
+    def atualizar_Reagente(self, id, nome, formula=None, cas=None, unidade=None, quantidade=None, armario=None, prateleira=None, posicao=None):
+        """
+        Atualiza o reagente (tabela Reagentes) e a localização correspondente (tabela Localizacao).
+        Se não existir registro de Localizacao para esse reagente, insere-o.
+        Retorna True se sucesso.
+        """
+        con = self.con.ConectaBanco()
+        if con is None:
+            raise sqlite3.Error("Sem conexão com o banco de dados.")
+
+        try:
+            cur = con.cursor()
+            # Atualiza tabela Reagentes
+            cur.execute("UPDATE Reagentes SET Nome = ?, Formula = ?, CAS = ?, Unidade = ? WHERE Id = ?",
+                        (nome, formula, cas, unidade, id))
+
+            # Verifica se já existe localização
+            cur.execute('SELECT 1 FROM Localizacao WHERE [fk_Reagentes_Localização] = ? LIMIT 1', (id,))
+            exists = cur.fetchone()
+
+            if exists:
+                cur.execute('UPDATE Localizacao SET Posicao = ?, Prateleira = ?, Armario = ?, Quantidade = ? WHERE [fk_Reagentes_Localização] = ?',
+                            (posicao or "", prateleira or "", armario or "", quantidade or 0, id))
+            else:
+                # Insere apenas se qualquer campo de localização for fornecido
+                if any(v is not None for v in (posicao, prateleira, armario, quantidade)):
+                    cur.execute('INSERT INTO Localizacao ([fk_Reagentes_Localização], Posicao, Prateleira, Armario, Quantidade) VALUES (?, ?, ?, ?, ?)',
+                                (id, posicao or "", prateleira or "", armario or "", quantidade or 0))
+
+            con.commit()
+            return True
+        except Exception:
+            try:
+                con.rollback()
+            except Exception:
+                pass
+            raise
+        finally:
+            try:
+                con.close()
+            except Exception:
+                pass
             
     # PARA O NOME DO USUÁRIO APARECER NA TELA PRINCIPAL
     def getNomeUsuario(self, cpf: str) -> str:
