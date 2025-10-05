@@ -84,18 +84,7 @@ class TelaEditarReagente:
         cb.grid(row=row, column=1, sticky="ew", pady=4)
         return cb
 
-    def confirmar_salvar(self):
-        proceed = Messagebox.yesno(
-            title="Confirmar edição",
-            message=("As alterações neste reagente podem impactar a geração de formulários, "
-                    "etiquetas e relatórios que utilizam estes dados.\n\n"
-                    "Deseja realmente salvar as alterações?")
-        )
-        if not proceed:
-            return
-
     def salvar(self):
-        self.win.after(100, lambda: self.confirmar_salvar())
         
         nome = self.ent_nome.get().strip()
         if not nome:

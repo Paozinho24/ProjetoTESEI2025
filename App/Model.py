@@ -147,8 +147,8 @@ class Model:
             con.commit()
             try:
                 # Registrar movimentação de atualização
-                cur.execute('INSERT INTO Movimentacoes (Reagente_Id, TipoDeMovimentacao, Motivo, Responsavel, Projeto) VALUES (?, ?, ?, ?, ?)',
-                            (id, 'Atualização', 'Cadastro de Novo Reagente', 'Sistema', None))
+                cur.execute('INSERT INTO Movimentacoes (Reagente_Id, TipoDeMovimentacao, QuantidadeMovimentada, Motivo, Responsavel, Projeto) VALUES (?, ?, ?, ?, ?, ?)',
+                            (id, 'Atualização', quantidade or 0, 'Cadastro de Novo Reagente', 'Sistema', None))
                 con.commit()
             except Exception:
                 try:
