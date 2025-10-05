@@ -148,7 +148,7 @@ class Model:
             try:
                 # Registrar movimentação de atualização
                 cur.execute('INSERT INTO Movimentacoes (Reagente_Id, TipoDeMovimentacao, Motivo, Responsavel, Projeto) VALUES (?, ?, ?, ?, ?)',
-                            (id, 'Atualização', 'Atualização', 'Sistema', None))
+                            (id, 'Atualização', 'Cadastro de Novo Reagente', 'Sistema', None))
                 con.commit()
             except Exception:
                 try:
@@ -184,17 +184,14 @@ class Model:
             cur = con.cursor()
             cur.execute("SELECT Nome, CPF, Senha, Email FROM Tecnicos ORDER BY Nome")
             rows = cur.fetchall()
+            # print(rows)
             formatted = []
             for r in rows:
                 nome = r[0]
                 cpf = r[1]
-                senha = r[2] if len(r) > 2 else None
-                email = r[3] if len(r) > 3 else None
-                try:
-                    cpf_str = str(cpf).zfill(11)
-                except Exception:
-                    cpf_str = str(cpf)
-                formatted.append((nome, cpf_str, senha, email))
+                senha = r[2] 
+                email = r[3] 
+                formatted.append((nome, cpf, senha, email))
             return formatted
         finally:
             try:
@@ -281,3 +278,4 @@ class Model:
                 con.close()
             except Exception:
                 pass
+            

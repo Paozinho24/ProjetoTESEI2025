@@ -82,11 +82,11 @@ class TelaCadastro:
         prateleira= self.ent_prateleira.get().strip() 
         posicao= self.ent_posicao.get().strip() 
 
-        # Close this window first to avoid blocking the main loop
+        # Fecha a janela primeiro para evitar quebra o loop pricipal 
         parent = getattr(self.win, 'master', None)
         try:
             try:
-                # try releasing grab if present
+                #TENTA LIBERAR O GRAP SE ESTIVER PRESENTE
                 self.win.grab_release()
             except Exception:
                 pass
@@ -97,7 +97,7 @@ class TelaCadastro:
         except Exception:
             pass
 
-        def _after_actions(novo_id=None, erro=None):
+        def PosRodar(novo_id=None, erro=None):
             if erro is not None:
                 print('Erro ao cadastrar:', erro)
             else:
@@ -108,23 +108,23 @@ class TelaCadastro:
                 except Exception as ex:
                     print('Erro ao executar on_saved:', ex)
 
-        def _do_save():
+        def Salvar():
             try:
                 novo_id = self.controller.cadastrar_Reagente(nome, formula, cas, unidade, quantidade, armario, prateleira, posicao, None )
                 if parent is not None:
                     try:
-                        parent.after(0, lambda: _after_actions(novo_id, None))
+                        parent.after(0, lambda: PosRodar(novo_id, None))
                     except Exception:
-                        _after_actions(novo_id, None)
+                        PosRodar(novo_id, None)
                 else:
-                    _after_actions(novo_id, None)
+                    PosRodar(novo_id, None)
             except Exception as ex:
                 if parent is not None:
                     try:
-                        parent.after(0, lambda: _after_actions(None, ex))
+                        parent.after(0, lambda: PosRodar(None, ex))
                     except Exception:
-                        _after_actions(None, ex)
+                        PosRodar(None, ex)
                 else:
-                    _after_actions(None, ex)
+                    PosRodar(None, ex)
 
-        threading.Thread(target=_do_save, daemon=True).start()
+        threading.Thread(target=Salvar, daemon=True).start()

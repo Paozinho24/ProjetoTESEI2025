@@ -1,6 +1,7 @@
 import tkinter as tk
 import threading
 import ttkbootstrap as ttk
+from ttkbootstrap.dialogs import Messagebox
 
 class TelaEditarReagente:
     def __init__(self, master, controller, reagente_values: tuple, on_saved=None):
@@ -9,6 +10,7 @@ class TelaEditarReagente:
         controller: ControllerGeral
         on_saved: callback chamado após salvar para recarregar a tabela
         """
+    
         self.controller = controller
         self.on_saved = on_saved
         self.win = tk.Toplevel(master)
@@ -82,7 +84,19 @@ class TelaEditarReagente:
         cb.grid(row=row, column=1, sticky="ew", pady=4)
         return cb
 
+    def confirmar_salvar(self):
+        proceed = Messagebox.yesno(
+            title="Confirmar edição",
+            message=("As alterações neste reagente podem impactar a geração de formulários, "
+                    "etiquetas e relatórios que utilizam estes dados.\n\n"
+                    "Deseja realmente salvar as alterações?")
+        )
+        if not proceed:
+            return
+
     def salvar(self):
+        self.win.after(100, lambda: self.confirmar_salvar())
+        
         nome = self.ent_nome.get().strip()
         if not nome:
             print("Aviso: Informe o Nome do reagente.")

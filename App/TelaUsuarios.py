@@ -72,17 +72,24 @@ class TelaUsuarios:
         if not sel:
             return
         vals = self.tree.item(sel[0])['values']
+    
         # Nome, CPF, Senha, Email
         try:
             self.entry_nome.delete(0, 'end')
             self.entry_nome.insert(0, vals[0])
-            # Garantir que o CPF seja mostrado com zeros à esquerda (11 dígitos)
-            cpf_val = vals[1]
+            # Trata CPF preservando zeros à esquerda.
+            self.entry_cpf.delete(0, 'end')
             try:
-                cpf_str = str(cpf_val).zfill(11)
+                cpf_val = vals[1]
+            except Exception:
+                cpf_val = ''
+            try:
+                cpf_str = str(cpf_val)
+                # Se for composto só por dígitos, garante 11 posições com zeros à esquerda
+                if cpf_str.isdigit():
+                    cpf_str = cpf_str.zfill(11)
             except Exception:
                 cpf_str = str(cpf_val)
-            self.entry_cpf.delete(0, 'end')
             self.entry_cpf.insert(0, cpf_str)
             self.entry_senha.delete(0, 'end')
             self.entry_senha.insert(0, vals[2])
