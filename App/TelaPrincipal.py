@@ -1,5 +1,7 @@
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
+from ttkbootstrap.dialogs import Messagebox
+import threading # << NOVO IMPORT NECESSÁRIO PARA PROCESSAMENTO ASSÍNCRONO
 from Control import ControllerGeral
 from Model import Model
 from TelaCadastro import TelaCadastro
@@ -18,6 +20,7 @@ class TelaPrincipal():
         except:
             pass
 
+
         style = ttk.Style()
         style.configure('TButton', font=('TkDefaultFont', 12, 'bold'), padding=10)
         style.configure('primary.TButton', font=('TkDefaultFont', 13, 'bold'), padding=10)
@@ -25,8 +28,8 @@ class TelaPrincipal():
         self.janela_tela_principal.title('Tela Principal')
 
         # --- MOLDURAS (bordas estéticas) ---
-        self.frame_azul_acima    = ttk.Frame(self.janela_tela_principal, bootstyle='info', height=40)
-        self.frame_azul_abaixo   = ttk.Frame(self.janela_tela_principal, bootstyle='info', height=20)
+        self.frame_azul_acima      = ttk.Frame(self.janela_tela_principal, bootstyle='info', height=40)
+        self.frame_azul_abaixo     = ttk.Frame(self.janela_tela_principal, bootstyle='info', height=20)
         self.frame_azul_esquerda = ttk.Frame(self.janela_tela_principal, bootstyle='info', width=20)
         self.frame_azul_direita  = ttk.Frame(self.janela_tela_principal, bootstyle='info', width=20)
 
@@ -43,7 +46,7 @@ class TelaPrincipal():
         # TOPO (barra superior) 
         self.frame_superior = ttk.Frame(container, bootstyle='primary')
         self.frame_superior.pack(side='top', fill='x')
-        # NÃO force height fixo aqui!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!; deixe o conteúdo determinar a altura
+        
 
         # Área logout dentro do topo
         self.frame_logout = ttk.Frame(self.frame_superior, bootstyle='primary')
@@ -87,7 +90,7 @@ class TelaPrincipal():
         self.tabela.column('Prateleira', width=120, anchor='center')
         self.tabela.column('Posição', width=100, anchor='center')
 
-        # Scrollbar vertical (AGORA com pack)
+        # Scrollbar vertical
         self.scrollbar_tabela = ttk.Scrollbar(area_meio, orient='vertical', command=self.tabela.yview)
         self.tabela.configure(yscrollcommand=self.scrollbar_tabela.set)
 
@@ -102,7 +105,8 @@ class TelaPrincipal():
         self.botao_cadastrar  = ttk.Button(self.frame_inferior_botoes,text='Cadastrar', bootstyle='primary', width=15, command=self.abrirCadastro)
         self.botao_relatorios = ttk.Button(self.frame_inferior_botoes, text='Relatórios', bootstyle='primary', width=15)
         self.botao_editar = ttk.Button(self.frame_inferior_botoes, text='Editar', bootstyle='warning' , width=15 , padding=(10), command=self.abrirEditar)
-        self.botao_retirar    = ttk.Button(self.frame_inferior_botoes, text='Retirar',     bootstyle='primary', width=15)
+        self.tabela.bind("<Double-1>", self.abrirEditar)
+        self.botao_retirar    = ttk.Button(self.frame_inferior_botoes, text='Retirar', bootstyle='primary', width=15)
 
 
         self.botao_cadastrar.pack(side='left', padx=8)
@@ -110,13 +114,13 @@ class TelaPrincipal():
         self.botao_editar.pack(side="left", padx=8)
         self.botao_retirar.pack(side='right', padx=8)
 
-        # === CARREGAR DADOS NA TABELA ===
+        # === CARREGAR DADOS NA TABELA (Assíncrono) ===
         self.carregar_dados_tabela()
         
         
     # #Funções de da Tela
     def logout(self):
-    
+        
         # Tenta recuperar a janela pai (se existir)
         TelaPai = self.janela_tela_principal.master if hasattr(self.janela_tela_principal, 'master') else None
 
@@ -142,7 +146,7 @@ class TelaPrincipal():
                         tela_inst.voltar_para_login()
                     except Exception:
                         pass
-            
+                
     def abrirCadastro(self):
         # Abre a tela e, ao salvar, chama recarregarTabela
         TelaCadastro(self.janela_tela_principal, self.controller, on_saved=self.recarregarTabela)
@@ -153,40 +157,66 @@ class TelaPrincipal():
             from TelaUsuarios import TelaUsuarios
             TelaUsuarios(topo)
         except Exception as ex:
-            print('Erro ao abrir TelaUsuarios:', ex)
+            Messagebox.show_error(title='Aviso tela usuario', message=(f'Erro ao Abrir tela Usuário: {ex}'))
 
-    def abrirEditar(self):
+    def abrirEditar(self, event=None):
         # Abre a tela de edição para o reagente selecionado na treeview
         sel = self.tabela.selection()
+
         if not sel:
-            print('Aviso: selecione um reagente para editar.')
+            Messagebox.show_info(title='Aviso reagente edição', message="Clique em um reagente para editá-lo")
             return
         try:
             item = self.tabela.item(sel[0])
             vals = item.get('values', ())
-            # Abre a tela de edição em top-level
+            # Abre a tela de edição em top-level, passando self.recarregarTabela como callback
             TelaEditarReagente(self.janela_tela_principal, self.controller, vals, on_saved=self.recarregarTabela)
         except Exception as ex:
-            print('Erro ao abrir a tela de edição:', ex)
+            Messagebox.show_error(title='Erro tabela de edição',message=(f'Erro ao abir a tabela de edição: {ex}'))
 
     def recarregarTabela(self):
-        # Limpa e recarrega a Treeview
+        """Limpa a Treeview e inicia o carregamento assíncrono dos novos dados."""
+        # 1. Limpa a Treeview (operação rápida na thread principal)
         for item in self.tabela.get_children():
             self.tabela.delete(item)
+            
+        # 2. Chama a função que agora inicia o carregamento assíncrono
         self.carregar_dados_tabela()
 
-# Carrega os dados da Tabela
+    
     def carregar_dados_tabela(self):
+        """Inicia o carregamento dos dados do banco em uma thread separada (para evitar travamento)."""
+        
+        # Função interna que faz o trabalho pesado (consulta ao DB)
+        def _executar_carregamento():
+            try:
+                # 1. Executa a operação de banco de dados na thread secundária
+                linhas = self.controller.listar_reagentes_localizacao()
+                
+                # 2. Agenda a atualização da GUI (Treeview) de volta na thread principal usando .after(0)
+                self.janela_tela_principal.after(0, lambda: self._atualizar_gui_com_dados(linhas))
+
+            except Exception as ex:
+                print(f'[ERRO THREAD] Erro ao carregar dados em thread: {ex}')
+                # Mostra erro na thread principal
+                self.janela_tela_principal.after(0, 
+                    lambda: Messagebox.show_error(title='Erro dados da tabela', message=(f'Erro ao carregar os dados da tabela:, {ex}'))
+                )
+
+        # Inicia a thread
+        threading.Thread(target=_executar_carregamento, daemon=True).start()
+
+    def _atualizar_gui_com_dados(self, linhas):
+        """Insere os dados na Treeview. Deve ser chamado APENAS na thread principal."""
         try:
-            linhas = self.controller.listar_reagentes_localizacao()
-            print(linhas)
+            print("Dados carregados com sucesso. Atualizando Treeview.")
             for linha in linhas:
                 self.tabela.insert('', 'end', values=(
                     linha[0], linha[1], linha[2], linha[3], linha[4],
                     linha[5], linha[6], linha[7], linha[8]
                 ))
         except Exception as ex:
-            print("Erro ao carregar dados da tabela:", ex)
+            Messagebox.show_error(title='Erro de interface', message=(f'Erro ao inserir dados na Treeview: {ex}'))
 
 
 # gui = ttk.Window(themename="flatly")

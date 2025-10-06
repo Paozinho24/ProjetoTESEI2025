@@ -2,6 +2,7 @@ import threading
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from Control import ControllerGeral
+from cryptography.fernet import Fernet
 
 
 class TelaUsuarios:
@@ -107,9 +108,13 @@ class TelaUsuarios:
     def Salvar_e_Editar(self):
         nome = self.entry_nome.get()
         cpf = self.entry_cpf.get()
-        senha = self.entry_senha.get()
         email = self.entry_email.get()
         parent = self.janela
+
+        #Tratamento de criptografia para senha
+        senha_get = (self.entry_senha.get())
+        
+
 
         def PosRodar():
             try:

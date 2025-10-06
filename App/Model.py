@@ -10,7 +10,7 @@ class Model:
     
         con = self.con.ConectaBanco()
         if con is None:
-            raise sqlite3.Error("Sem conexão csom o banco de dados.")
+            raise sqlite3.Error("Sem conexão com o banco de dados.")
 
         try:
             # print("PASSEI AQUI")
