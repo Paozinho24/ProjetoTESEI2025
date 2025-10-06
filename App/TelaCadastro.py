@@ -27,10 +27,10 @@ class TelaCadastro:
 
         # Campos
         self.ent_nome =self.LinhaForm(form, 0, "Nome*")
-        self.ent_formula=self.LinhaForm(form, 1, "Fórmula")
-        self.ent_cas=self.LinhaForm(form, 2, "CAS")
-        self.cmb_unidade=self.ComboForm(form, 3, "Unidade", ("g", "mg", "kg", "mL", "L", "unid"))
-        self.ent_qtd=self.LinhaForm(form, 4, "Quantidade")
+        self.ent_formula=self.LinhaForm(form, 1, "Fórmula*")
+        self.ent_cas=self.LinhaForm(form, 2, "CAS*")
+        self.cmb_unidade=self.ComboForm(form, 3, "Unidade*", ("g", "mg", "kg", "mL", "L", "unid"))
+        self.ent_qtd=self.LinhaForm(form, 4, "Quantidade*")
         self.ent_armario=self.LinhaForm(form, 5, "Armário")
         self.ent_prateleira=self.LinhaForm(form, 6, "Prateleira")
         self.ent_posicao=self.LinhaForm(form, 7, "Posição")
