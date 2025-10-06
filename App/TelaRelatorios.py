@@ -13,7 +13,10 @@ class TelaRelatorios:
         self.janela = ttk.Toplevel(master)
         self.janela.title('Relatórios de Movimentações')
         self.janela.transient(master)
+<<<<<<< HEAD
         self.janela.grab_set()
+=======
+>>>>>>> 03b6c59ce290b9e7b35e37730f7ab67278c48f27
 
         body = ttk.Frame(self.janela, padding=12)
         body.pack(fill='both', expand=True)

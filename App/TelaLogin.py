@@ -3,7 +3,7 @@ from ttkbootstrap.dialogs import Messagebox
 from TelaPrincipal import TelaPrincipal
 from Control import ControllerGeral
 
-ARQ_USUARIO = "ultimo_usuario.txt"
+ARQ_USUARIO = "ultimo_usurious.txt"
 
 class TelaLogin:
     def __init__(self, master):
@@ -129,3 +129,4 @@ class TelaLogin:
 gui = ttk.Window(themename="flatly")
 TelaLogin(gui)
 gui.mainloop()
+
