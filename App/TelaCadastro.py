@@ -2,7 +2,12 @@
 import tkinter as tk
 import threading
 import ttkbootstrap as ttk
+<<<<<<< HEAD
 from tkinter import messagebox
+=======
+from ttkbootstrap.dialogs import Messagebox
+from ui_helpers import safe_messagebox
+>>>>>>> 1076bdb566cbf2edf22f177a6257595be6c04304
 
 class TelaCadastro:
     def __init__(self, master, controller, on_saved=None):
@@ -38,7 +43,11 @@ class TelaCadastro:
         # Botões
         btns = ttk.Frame(form)
         btns.grid(row=8, column=0, columnspan=2, pady=(12, 0))
+<<<<<<< HEAD
         ttk.Button(btns, text="Salvar", bootstyle="success", command=self.tratamento_salvar).pack(side="left", padx=6)
+=======
+        ttk.Button(btns, text="Salvar", bootstyle="success", command=self.salvar).pack(side="left", padx=6)
+>>>>>>> 1076bdb566cbf2edf22f177a6257595be6c04304
         ttk.Button(btns, text="Cancelar", command=self.janela.destroy).pack(side="left", padx=6)
 
         form.grid_columnconfigure(1, weight=1)
@@ -67,13 +76,18 @@ class TelaCadastro:
         # Validar o nome
         nome = self.ent_nome.get().strip()
         if not nome:
+<<<<<<< HEAD
 
             messagebox.showinfo(title='Nome Necessário', message="Insira o nome do reagente")
+=======
+            safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "warning", "Informe o Nome do reagente.", "Atenção")
+>>>>>>> 1076bdb566cbf2edf22f177a6257595be6c04304
             self.ent_nome.focus()
             return
 
         formula= self.ent_formula.get().strip()
         if not formula:
+<<<<<<< HEAD
             messagebox.showinfo('warning', 'Informe a fórmula do reagente.')
             self.ent_formula.focus()
             return
@@ -106,11 +120,25 @@ class TelaCadastro:
         unidade= self.cmb_unidade.get().strip()
         if not unidade or unidade not in self.cmb_unidade['values']:
             messagebox.showinfo('Warning', 'Informe a unidade do reagente')
+=======
+            safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "warning", "Informe a Fórmula do reagente.", "Atenção")
+            self.ent_formula.focus()
+            return
+        cas= self.ent_cas.get().strip() 
+        if not cas:
+            safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "warning", "Informe o CAS do reagente.", "Atenção")
+            self.ent_cas.focus()
+            return
+        unidade= self.cmb_unidade.get().strip()
+        if not unidade:
+            safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "warning", "Informe a Unidade do reagente.", "Atenção")
+>>>>>>> 1076bdb566cbf2edf22f177a6257595be6c04304
             try:
                 self.cmb_unidade.focus()
             except Exception:
                 pass
             return
+<<<<<<< HEAD
         
         quantidade = self.ent_qtd.get().strip()
         qtd_txt =(self.ent_qtd.get() or "").strip().replace(",", ".")
@@ -119,6 +147,20 @@ class TelaCadastro:
             self.salvar(cas, unidade, formula, nome, quantidade)
         except ValueError:
             messagebox.showinfo('Warning', 'Insira uma quantidade inválida. Use números (ex.: 250 ou 250,5)')
+=======
+
+        qtd_txt =(self.ent_qtd.get() or "").strip().replace(",", ".")
+        if not qtd_txt:
+            safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "warning", "Informe a Quantidade do reagente.", "Atenção")
+            self.ent_qtd.focus()
+            return
+        quantidade = None
+        # Verificação para valores quebrados
+        try:
+            quantidade = float(qtd_txt)
+        except ValueError:
+            safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "warning", "Quantidade inválida. Use números (ex.: 250 ou 250,5).", "Atenção")
+>>>>>>> 1076bdb566cbf2edf22f177a6257595be6c04304
             self.ent_qtd.focus()
             return
 
@@ -155,12 +197,20 @@ class TelaCadastro:
                     # mostra erro na UI
                     if parent is not None:
                         try:
+<<<<<<< HEAD
                             messagebox.showerror('Erro Cadastro', f'Erro ao Cadastrar: {erro}')
 
                         except Exception:
                             messagebox.showerror('Erro Cadastro', f'Erro ao Cadastrar: {erro}')
                     else:
                         messagebox.showerror('Erro Cadastro', f'Erro ao cadastrar: {erro}')
+=======
+                            parent.after(0, lambda: safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "error", f'Erro ao cadastrar:\n{erro}', 'Erro'))
+                        except Exception:
+                            safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "error", f'Erro ao cadastrar:\n{erro}', 'Erro')
+                    else:
+                        safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "error", f'Erro ao cadastrar:\n{erro}', 'Erro')
+>>>>>>> 1076bdb566cbf2edf22f177a6257595be6c04304
                 # else:
                 #     if parent is not None:
                 #         try:
