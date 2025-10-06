@@ -4,7 +4,8 @@ from Control import ControllerGeral
 from Model import Model
 from TelaCadastro import TelaCadastro
 from TelaEditarReagente import TelaEditarReagente
-
+from tkinter import messagebox, PhotoImage
+import os
 
 class TelaPrincipal():
     def __init__(self, master, nome_usuario="Usuário", cpf_usuario=None):
@@ -24,6 +25,20 @@ class TelaPrincipal():
 
         self.janela_tela_principal.title('Tela Principal')
 
+
+        #criação da imagem:
+        # self.imagem = None
+        # caminho_imagem = "./Imagem/erlenmeyer.png"
+
+        # if not os.path.exists(caminho_imagem):
+        #     messagebox.showwarning("Aviso", f"Arquivo '{caminho_imagem}' não encontrado. Exibindo apenas texto.")
+        # else:
+        #     try:
+        #         self.imagem = PhotoImage(file=caminho_imagem)
+        #     except ttk.TclError as e:
+        #         messagebox.showwarning("Erro Gerar", "Erro ao gerar imagem")
+
+        
         # --- MOLDURAS (bordas estéticas) ---
         self.frame_azul_acima    = ttk.Frame(self.janela_tela_principal, bootstyle='info', height=40)
         self.frame_azul_abaixo   = ttk.Frame(self.janela_tela_principal, bootstyle='info', height=20)
@@ -100,9 +115,10 @@ class TelaPrincipal():
         self.frame_inferior_botoes.pack(side='bottom', fill='x', pady=(4, 8))
 
         self.botao_cadastrar  = ttk.Button(self.frame_inferior_botoes,text='Cadastrar', bootstyle='primary', width=15, command=self.abrirCadastro)
-        self.botao_relatorios = ttk.Button(self.frame_inferior_botoes, text='Relatórios', bootstyle='primary', width=15)
+        self.botao_relatorios = ttk.Button(self.frame_inferior_botoes, text='Relatórios', bootstyle='primary', width=15, command=self.abrirRelatorios)
+        self.tabela.bind("<Double-1>", self.abrirEditar)
         self.botao_editar = ttk.Button(self.frame_inferior_botoes, text='Editar', bootstyle='warning' , width=15 , padding=(10), command=self.abrirEditar)
-        self.botao_retirar    = ttk.Button(self.frame_inferior_botoes, text='Retirar',     bootstyle='primary', width=15)
+        self.botao_retirar    = ttk.Button(self.frame_inferior_botoes, text='Retirar',     bootstyle='primary', width=15, command=self.abrirRetirar)
 
 
         self.botao_cadastrar.pack(side='left', padx=8)
@@ -153,13 +169,27 @@ class TelaPrincipal():
             from TelaUsuarios import TelaUsuarios
             TelaUsuarios(topo)
         except Exception as ex:
-            print('Erro ao abrir TelaUsuarios:', ex)
+            messagebox.showwarning('Erro TelaUsuario', f'Erro ao abrir telaUusário: {ex} ')
+    
+    def abrirRetirar(self):
+        sel = self.tabela.selection()
+        if not sel:
+            messagebox.showinfo('Selecionar Reagente' , 'Selecione um reagente parar retirar')
+            return
+        try:
+            item = self.tabela.item(sel[0])
+            vals = item.get('values', ())
+            from TelaRetirar import TelaRetirar
+            TelaRetirar(self.janela_tela_principal, self.controller, vals, on_done=self.recarregarTabela)
+        except Exception as ex:
+            messagebox.showerror('tela de retirada' , 'Erro ao abrir tela de retirada')
 
-    def abrirEditar(self):
+
+    def abrirEditar(self, event=None):
         # Abre a tela de edição para o reagente selecionado na treeview
         sel = self.tabela.selection()
         if not sel:
-            print('Aviso: selecione um reagente para editar.')
+            messagebox.showinfo('selecionar reagente', 'Selecione um reagente para editar')
             return
         try:
             item = self.tabela.item(sel[0])
@@ -167,7 +197,14 @@ class TelaPrincipal():
             # Abre a tela de edição em top-level
             TelaEditarReagente(self.janela_tela_principal, self.controller, vals, on_saved=self.recarregarTabela)
         except Exception as ex:
-            print('Erro ao abrir a tela de edição:', ex)
+            messagebox.showwarning('erro tela de edição', 'Erro ao abrir a tela de edição')
+    
+    def abrirRelatorios(self):
+        try:
+            from TelaRelatorios import TelaRelatorios
+            TelaRelatorios(self.janela_tela_principal, self.controller)
+        except Exception as ex:
+            messagebox.showwarning('Erro TelaRelatorios', 'Erro ao abrir a TelaRelatórios')
 
     def recarregarTabela(self):
         # Limpa e recarrega a Treeview
@@ -179,14 +216,13 @@ class TelaPrincipal():
     def carregar_dados_tabela(self):
         try:
             linhas = self.controller.listar_reagentes_localizacao()
-            print(linhas)
             for linha in linhas:
                 self.tabela.insert('', 'end', values=(
                     linha[0], linha[1], linha[2], linha[3], linha[4],
                     linha[5], linha[6], linha[7], linha[8]
                 ))
         except Exception as ex:
-            print("Erro ao carregar dados da tabela:", ex)
+            messagebox.showwarning('Erro dados da Tabela', 'Erro ao carregar os dados da tabela')
 
 
 # gui = ttk.Window(themename="flatly")

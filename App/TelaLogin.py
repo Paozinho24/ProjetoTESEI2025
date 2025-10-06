@@ -1,8 +1,7 @@
-
 import ttkbootstrap as ttk
-from ttkbootstrap.dialogs import Messagebox
 from TelaPrincipal import TelaPrincipal
 from Control import ControllerGeral
+from tkinter import messagebox
 
 ARQ_USUARIO = "ultimo_usuario.txt"
 
@@ -10,7 +9,7 @@ class TelaLogin:
     def __init__(self, master):
         self.janela = master
         self.janela.title("Login")
-        self.janela.geometry("400x400")
+        self.janela.geometry("400x400+700+300")
         self.janela.resizable(False, False)
         try:
             self.janela.tela_instance = self
@@ -27,7 +26,7 @@ class TelaLogin:
         self.entry_usuario.focus()
 
         ttk.Label(self.janela, text="Senha:").pack(pady=(10, 2))
-        self.entry_senha = ttk.Entry(self.janela, width=30, show="*")
+        self.entry_senha = ttk.Entry(self.janela, width=30, show="•")
         self.entry_senha.pack(pady=5)
 
         # Mostrar senha (simples)
@@ -59,7 +58,7 @@ class TelaLogin:
             pass
         
     def MostrarSenha(self):
-        self.entry_senha.configure(show="" if self.var_mostrar.get() else "*")
+        self.entry_senha.configure(show="" if self.var_mostrar.get() else "•")
 
     def carregarUsuario(self):
         """Carrega o último CPF salvo (se existir) e preenche o campo."""
@@ -85,11 +84,10 @@ class TelaLogin:
         senha = self.entry_senha.get()
 
         if not cpf.strip():
-            Messagebox.show_warning("Informe o CPF.", "Atenção")
+            messagebox.showwarning("Informe o CPF.", "Atenção")
             self.entry_usuario.focus()
             return
         if not senha:
-            Messagebox.show_warning("Informe a senha.", "Atenção")
             self.entry_senha.focus()
             return
 
@@ -122,9 +120,9 @@ class TelaLogin:
 
                 self.tela_principal.protocol("WM_DELETE_WINDOW", fechar_tudo)
             else:
-                Messagebox.show_error("CPF ou senha incorretos.", "Acesso negado")
+                messagebox.showerror("CPF ou senha incorretos", "Acesso negado")
         except Exception as ex:
-            Messagebox.show_error(f"Erro ao validar login:\n{ex}", "Erro")
+            messagebox.showerror(f"Erro ao validar login:\n{ex}", "Erro")
 
 
 gui = ttk.Window(themename="flatly")

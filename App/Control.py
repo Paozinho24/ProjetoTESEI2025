@@ -1,4 +1,4 @@
-import Model  
+import Model
 
 class ControllerGeral:
     def __init__(self):
@@ -46,3 +46,9 @@ class ControllerGeral:
 
     def deletar_tecnico(self, cpf):
         return self.Model.deletar_tecnico(cpf)
+
+    def retirar_reagente(self, reagente_id, quantidade_retirada, motivo, responsavel, projeto=None):
+        return self.Model.retirar_reagente(reagente_id, quantidade_retirada, motivo, responsavel, projeto)
+
+    def listar_movimentacoes_periodo(self, data_inicio: str, data_fim: str):
+        return self.Model.listar_movimentacoes_periodo(data_inicio, data_fim)

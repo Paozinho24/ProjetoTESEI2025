@@ -1,7 +1,9 @@
 import threading
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
+from tkinter import messagebox
 from Control import ControllerGeral
+
 
 
 class TelaUsuarios:
@@ -133,13 +135,23 @@ class TelaUsuarios:
                 except Exception:
                     PosRodar()
             except Exception as ex:
-                print('Erro ao Salvar_e_Editar usuario:', ex)
+                try:
+                    messagebox.showwarning('Erro  editar Uusário', 'Erro ao Salvar/Editar usuário')
+                except Exception:
+                    messagebox.showwarning('Erro  editar Uusário', 'Erro ao Salvar/Editar usuário')
 
         threading.Thread(target=Salvar, daemon=True).start()
 
     def excluir(self):
         cpf = self.entry_cpf.get()
         if not cpf:
+            return
+        # Impede exclusão automática do admin
+        if str(cpf).strip().lower() == 'admin':
+            try:
+                messagebox.showwarning('PROIBIDO!!', 'Não é permitido exlcuir o usuário admin')
+            except Exception:
+                print('Tentativa de excluir admin detectada.')
             return
         parent = self.janela
 
@@ -158,6 +170,9 @@ class TelaUsuarios:
                     except Exception as ex:
                         print('Erro ao limpar form após delete:', ex)
             except Exception as ex:
-                print('Erro ao deletar usuario:', ex)
+                try:
+                    messagebox.showwarning('erro deletar usuario', 'Erro ao Deletar usuario')
+                except Exception:
+                    print('Erro ao deletar usuario:', ex)
 
         threading.Thread(target=DeletaTecnico, daemon=True).start()
