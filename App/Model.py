@@ -168,6 +168,39 @@ class Model:
                 con.close()
             except Exception:
                 pass
+
+    def listar_movimentacoes_periodo(self, data_inicio: str, data_fim: str):
+        """Retorna as movimentações entre data_inicio e data_fim.
+        data_inicio e data_fim devem estar no formato 'YYYY-MM-DD' ou 'YYYY-MM-DD HH:MM:SS'.
+        Retorna lista de tuplas: (Id, Reagente_Id, TipoDeMovimentacao, QuantidadeMovimentada, Motivo, Responsavel, Projeto, DataHora)
+        """
+        con = self.con.ConectaBanco()
+        if con is None:
+            raise sqlite3.Error("Sem conexão com o banco de dados.")
+        try:
+            cur = con.cursor()
+            # normalizar datas para incluir tempo se necessário
+            if len(data_inicio) == 10:
+                data_inicio_q = data_inicio + ' 00:00:00'
+            else:
+                data_inicio_q = data_inicio
+            if len(data_fim) == 10:
+                data_fim_q = data_fim + ' 23:59:59'
+            else:
+                data_fim_q = data_fim
+
+            sql = '''SELECT Id, Reagente_Id, TipoDeMovimentacao, QuantidadeMovimentada, Motivo, Responsavel, Projeto, DataHora
+                     FROM Movimentacoes
+                     WHERE DataHora BETWEEN ? AND ?
+                     ORDER BY DataHora ASC''' 
+            cur.execute(sql, (data_inicio_q, data_fim_q))
+            rows = cur.fetchall()
+            return rows
+        finally:
+            try:
+                con.close()
+            except Exception:
+                pass
             
     # PARA O NOME DO USUÁRIO APARECER NA TELA PRINCIPAL
     def getNomeUsuario(self, cpf: str) -> str:

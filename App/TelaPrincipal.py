@@ -1,4 +1,5 @@
 import ttkbootstrap as ttk
+from ttkbootstrap.dialogs import Messagebox
 from ttkbootstrap.constants import *
 from Control import ControllerGeral
 from Model import Model
@@ -100,7 +101,7 @@ class TelaPrincipal():
         self.frame_inferior_botoes.pack(side='bottom', fill='x', pady=(4, 8))
 
         self.botao_cadastrar  = ttk.Button(self.frame_inferior_botoes,text='Cadastrar', bootstyle='primary', width=15, command=self.abrirCadastro)
-        self.botao_relatorios = ttk.Button(self.frame_inferior_botoes, text='Relatórios', bootstyle='primary', width=15)
+        self.botao_relatorios = ttk.Button(self.frame_inferior_botoes, text='Relatórios', bootstyle='primary', width=15, command=self.abrirRelatorios)
         self.botao_editar = ttk.Button(self.frame_inferior_botoes, text='Editar', bootstyle='warning' , width=15 , padding=(10), command=self.abrirEditar)
         self.botao_retirar    = ttk.Button(self.frame_inferior_botoes, text='Retirar',     bootstyle='primary', width=15, command=self.abrirRetirar)
 
@@ -159,7 +160,7 @@ class TelaPrincipal():
         # Abre a tela de edição para o reagente selecionado na treeview
         sel = self.tabela.selection()
         if not sel:
-            print('Aviso: selecione um reagente para editar.')
+            Messagebox.show_warning('Aviso: selecione um reagente para editar.')
             return
         try:
             item = self.tabela.item(sel[0])
@@ -167,12 +168,20 @@ class TelaPrincipal():
             # Abre a tela de edição em top-level
             TelaEditarReagente(self.janela_tela_principal, self.controller, vals, on_saved=self.recarregarTabela)
         except Exception as ex:
-            print('Erro ao abrir a tela de edição:', ex)
+            Messagebox.show_warning('Erro ao abrir a tela de edição:', ex)
+
+    def abrirRelatorios(self):
+        try:
+            topo = ttk.Toplevel(self.janela_tela_principal)
+            from TelaRelatorios import TelaRelatorios
+            TelaRelatorios(topo, self.controller)
+        except Exception as ex:
+             Messagebox.show_warning('Erro ao abrir TelaRelatorios:', ex)
 
     def abrirRetirar(self):
         sel = self.tabela.selection()
         if not sel:
-            print('Aviso: selecione um reagente para retirar.')
+            Messagebox.show_warning('Aviso: selecione um reagente para retirar.')
             return
         try:
             item = self.tabela.item(sel[0])
@@ -180,7 +189,7 @@ class TelaPrincipal():
             from TelaRetirar import TelaRetirar
             TelaRetirar(self.janela_tela_principal, self.controller, vals, on_done=self.recarregarTabela)
         except Exception as ex:
-            print('Erro ao abrir a tela de retirada:', ex)
+            Messagebox.show_warning('Erro ao abrir a tela de retirada:', ex)
 
     def recarregarTabela(self):
         # Limpa e recarrega a Treeview
@@ -192,14 +201,14 @@ class TelaPrincipal():
     def carregar_dados_tabela(self):
         try:
             linhas = self.controller.listar_reagentes_localizacao()
-            print(linhas)
+            # print(linhas) debugbolado
             for linha in linhas:
                 self.tabela.insert('', 'end', values=(
                     linha[0], linha[1], linha[2], linha[3], linha[4],
                     linha[5], linha[6], linha[7], linha[8]
                 ))
         except Exception as ex:
-            print("Erro ao carregar dados da tabela:", ex)
+            Messagebox.show_warning("Erro ao carregar dados da tabela:", ex)
 
 
 # gui = ttk.Window(themename="flatly")

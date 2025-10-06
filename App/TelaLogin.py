@@ -1,4 +1,3 @@
-
 import ttkbootstrap as ttk
 from ttkbootstrap.dialogs import Messagebox
 from TelaPrincipal import TelaPrincipal

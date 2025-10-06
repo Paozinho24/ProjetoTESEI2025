@@ -5,7 +5,6 @@ from ttkbootstrap.dialogs import Messagebox
 class TelaRetirar:
     def __init__(self, master, controller: object, reagente_vals: tuple, on_done: callable = None):
         """reagente_vals: tuple retornada pela Treeview (Id, Nome, CAS, Formula, Unidade, Quantidade, Armario, Prateleira, Posicao)
-        controller: ControllerGeral
         on_done: callback executado após retirada para recarregar tabelas
         """
         self.controller = controller
