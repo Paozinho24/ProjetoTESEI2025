@@ -46,3 +46,6 @@ class ControllerGeral:
 
     def deletar_tecnico(self, cpf):
         return self.Model.deletar_tecnico(cpf)
+
+    def retirar_reagente(self, reagente_id, quantidade_retirada, motivo, responsavel, projeto=None):
+        return self.Model.retirar_reagente(reagente_id, quantidade_retirada, motivo, responsavel, projeto)

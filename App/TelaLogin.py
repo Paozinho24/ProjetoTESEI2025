@@ -10,7 +10,7 @@ class TelaLogin:
     def __init__(self, master):
         self.janela = master
         self.janela.title("Login")
-        self.janela.geometry("400x400")
+        self.janela.geometry("400x320")
         self.janela.resizable(False, False)
         try:
             self.janela.tela_instance = self

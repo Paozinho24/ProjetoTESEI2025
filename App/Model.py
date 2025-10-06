@@ -1,5 +1,6 @@
 import ConexaoBanco
 import sqlite3
+from datetime import datetime
 
 class Model:
     def __init__(self):
@@ -266,6 +267,84 @@ class Model:
             cur = con.cursor()
             cur.execute("DELETE FROM Tecnicos WHERE CPF = ?", (cpf,))
             con.commit()
+            return True
+        except Exception:
+            try:
+                con.rollback()
+            except Exception:
+                pass
+            raise
+        finally:
+            try:
+                con.close()
+            except Exception:
+                pass
+
+    def retirar_reagente(self, reagente_id, quantidade_retirada, motivo, responsavel, projeto=None):
+        """Retira uma quantidade do reagente (Localizacao) e registra uma movimentação.
+        Retorna True se sucesso, lança exceção em erro.
+        """
+        con = self.con.ConectaBanco()
+        if con is None:
+            raise sqlite3.Error("Sem conexão com o banco de dados.")
+
+        try:
+            cur = con.cursor()
+
+            # Obter quantidade atual (se existir)
+            cur.execute('SELECT Quantidade FROM Localizacao WHERE [fk_Reagentes_Localização] = ? LIMIT 1', (reagente_id,))
+            row = cur.fetchone()
+            atual = 0
+            if row and len(row) > 0 and row[0] is not None:
+                try:
+                    atual = float(row[0])
+                except Exception:
+                    atual = 0
+
+            # Validar quantidade_retirada
+            try:
+                qtd = float(quantidade_retirada)
+            except Exception:
+                raise ValueError("Quantidade inválida")
+
+            if qtd <= 0:
+                raise ValueError("Quantidade a retirar deve ser maior que zero")
+
+            if qtd > atual:
+                raise ValueError("Quantidade insuficiente no estoque")
+
+            nova = atual - qtd
+
+            # Atualiza ou insere registro de localização
+            cur.execute('SELECT 1 FROM Localizacao WHERE [fk_Reagentes_Localização] = ? LIMIT 1', (reagente_id,))
+            exists = cur.fetchone()
+            if exists:
+                cur.execute('UPDATE Localizacao SET Quantidade = ? WHERE [fk_Reagentes_Localização] = ?', (nova, reagente_id))
+            else:
+                cur.execute('INSERT INTO Localizacao ([fk_Reagentes_Localização], Posicao, Prateleira, Armario, Quantidade) VALUES (?, ?, ?, ?, ?)', (reagente_id, '', '', '', nova))
+
+            con.commit()
+
+            # Inserir movimentação — tentar com a coluna QuantidadeMovimentada e falhar para alternativa
+            # Registrar movimentação com DataHora explícita (junto com QuantidadeMovimentada quando possível)
+            datahora = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            try:
+                cur.execute('INSERT INTO Movimentacoes (Reagente_Id, TipoDeMovimentacao, QuantidadeMovimentada, Motivo, Responsavel, Projeto, DataHora) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                            (reagente_id, 'Retirada', qtd, motivo or '', responsavel or '', projeto, datahora))
+                con.commit()
+            except Exception:
+                try:
+                    # fallback para schema que não possua QuantidadeMovimentada
+                    cur.execute('INSERT INTO Movimentacoes (Reagente_Id, TipoDeMovimentacao, Motivo, Responsavel, Projeto, DataHora) VALUES (?, ?, ?, ?, ?, ?)',
+                                (reagente_id, 'Retirada', motivo or '', responsavel or '', projeto, datahora))
+                    con.commit()
+                except Exception:
+                    try:
+                        con.rollback()
+                    except Exception:
+                        pass
+                    raise
+
             return True
         except Exception:
             try:

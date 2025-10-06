@@ -102,7 +102,7 @@ class TelaPrincipal():
         self.botao_cadastrar  = ttk.Button(self.frame_inferior_botoes,text='Cadastrar', bootstyle='primary', width=15, command=self.abrirCadastro)
         self.botao_relatorios = ttk.Button(self.frame_inferior_botoes, text='Relatórios', bootstyle='primary', width=15)
         self.botao_editar = ttk.Button(self.frame_inferior_botoes, text='Editar', bootstyle='warning' , width=15 , padding=(10), command=self.abrirEditar)
-        self.botao_retirar    = ttk.Button(self.frame_inferior_botoes, text='Retirar',     bootstyle='primary', width=15)
+        self.botao_retirar    = ttk.Button(self.frame_inferior_botoes, text='Retirar',     bootstyle='primary', width=15, command=self.abrirRetirar)
 
 
         self.botao_cadastrar.pack(side='left', padx=8)
@@ -168,6 +168,19 @@ class TelaPrincipal():
             TelaEditarReagente(self.janela_tela_principal, self.controller, vals, on_saved=self.recarregarTabela)
         except Exception as ex:
             print('Erro ao abrir a tela de edição:', ex)
+
+    def abrirRetirar(self):
+        sel = self.tabela.selection()
+        if not sel:
+            print('Aviso: selecione um reagente para retirar.')
+            return
+        try:
+            item = self.tabela.item(sel[0])
+            vals = item.get('values', ())
+            from TelaRetirar import TelaRetirar
+            TelaRetirar(self.janela_tela_principal, self.controller, vals, on_done=self.recarregarTabela)
+        except Exception as ex:
+            print('Erro ao abrir a tela de retirada:', ex)
 
     def recarregarTabela(self):
         # Limpa e recarrega a Treeview
