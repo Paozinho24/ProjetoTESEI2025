@@ -4,7 +4,7 @@ from TelaPrincipal import TelaPrincipal
 from Control import ControllerGeral
 from ui_helpers import safe_messagebox
 
-ARQ_USUARIO = "ultimo_usuario.txt"
+ARQ_USUARIO = "ultimo_usurious.txt"
 
 class TelaLogin:
     def __init__(self, master):
@@ -130,3 +130,4 @@ class TelaLogin:
 gui = ttk.Window(themename="flatly")
 TelaLogin(gui)
 gui.mainloop()
+

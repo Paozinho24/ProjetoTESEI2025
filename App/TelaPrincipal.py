@@ -177,9 +177,8 @@ class TelaPrincipal():
 
     def abrirRelatorios(self):
         try:
-            topo = ttk.Toplevel(self.janela_tela_principal)
             from TelaRelatorios import TelaRelatorios
-            TelaRelatorios(topo, self.controller)
+            TelaRelatorios(self.janela_tela_principal, self.controller)
         except Exception as ex:
             self.janela_tela_principal.after(0, lambda: safe_messagebox(self._parent(), "warning", "Erro ao abrir TelaRelatorios: " + str(ex), "Aviso"))
 
