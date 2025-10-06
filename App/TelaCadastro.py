@@ -2,7 +2,7 @@
 import tkinter as tk
 import threading
 import ttkbootstrap as ttk
-from tkinter import messagebox
+from ttkbootstrap.dialogs import Messagebox
 
 class TelaCadastro:
     def __init__(self, master, controller, on_saved=None):
@@ -13,16 +13,16 @@ class TelaCadastro:
         """
         self.controller = controller
         self.on_saved = on_saved
-        self.win = tk.Toplevel(master)
-        self.win.title("Cadastrar Reagente")
-        self.win.transient(master)
+        self.janela = tk.Toplevel(master)
+        self.janela.title("Cadastrar Reagente")
+        self.janela.transient(master)
         # avoid modal grab that can block other dialogs; keep transient only
         try:
-            self.win.geometry("420x420+700+300")
+            self.janela.geometry("420x420")
         except Exception:
             pass
 
-        form = ttk.Frame(self.win, padding=12)
+        form = ttk.Frame(self.janela, padding=12)
         form.pack(fill="both", expand=True)
 
         # Campos
@@ -38,8 +38,8 @@ class TelaCadastro:
         # Botões
         btns = ttk.Frame(form)
         btns.grid(row=8, column=0, columnspan=2, pady=(12, 0))
-        ttk.Button(btns, text="Salvar", bootstyle="success", command=self.tratamento_salvar).pactk(side="left", padx=6)
-        ttk.Button(btns, text="Cancelar", command=self.win.destroy).pack(side="left", padx=6)
+        ttk.Button(btns, text="Salvar", bootstyle="success", command=self.salvar).pack(side="left", padx=6)
+        ttk.Button(btns, text="Cancelar", command=self.janela.destroy).pack(side="left", padx=6)
 
         form.grid_columnconfigure(1, weight=1)
         self.ent_nome.focus()
@@ -55,135 +55,97 @@ class TelaCadastro:
         cb = ttk.Combobox(parent, width=29, values=values, state="normal")
         cb.grid(row=row, column=1, sticky="ew", pady=4)
         return cb
-    
-
-    def tratamento_salvar(self):
-        """
-        Valida os campos de Nome, CAS e Quantidade. 
-        Se a validação passar, prossegue para a confirmação.
-        """
-
-        nome = self.ent_nome.get().strip()
-        cas = self.ent_cas.get().strip().replace("-", "").replace(' ', '')
-        qtd_txt = (self.ent_qtd.get() or "").strip().replace(",", ".")
-
-        # 1. Validar o nome
-        if not nome:
-
-            messagebox.showinfo(title='Nome Necessário', message="Insira o nome do reagente")
-            self.ent_nome.focus()
-            return
-
-        # 2. Validar o CAS
-        if cas:
-            try:
-                # O algoritmo de validação de CAS está aqui, mantido por consistência, 
-                # embora a regra do CAS seja complexa e possa causar falso negativo.
-                digitos = cas.replace('-', "").replace(" ", "")
-                if not digitos.isdigit() or len(digitos) < 5:
-                     raise ValueError('Formato CAS inválido')
-                
-                checksum_original = int(digitos[-1])
-                digitos_verificacao = digitos[:-1]
-                soma = 0
-                for i, digito_char in enumerate(reversed(digitos_verificacao)):
-                    multiplicador = i + 1
-                    soma += int(digito_char) * multiplicador
-                    
-                checksum_calculado = soma % 10
-
-                if checksum_original != checksum_calculado:
-                    raise ValueError('O CAS inserido não é valido!')
-                
-            except (ValueError, IndexError):
-                messagebox.showerror(title='Cas Inválido', message="O CAS inserido não é válido ou está incompleto.")
-                self.ent_cas.focus()
-                return
-        
-        # 3. Validar quantidade (se preenchida)
-        if qtd_txt:
-            try:
-                float(qtd_txt)
-            except ValueError:
-                messagebox.showerror(title='Quantidade Inválida', message='Aviso: Quantidade inválida. Use números (ex.: 250 ou 250,5)')
-                self.ent_qtd.focus()
-                return
-        
-        # Se a validação passou, prossegue para a confirmação
-        self.confirmar_salvar()
 
     def salvar(self):
         # Lê e valida
         nome   = self.ent_nome.get().strip()
         if not nome:
-            print("Aviso: Informe o Nome do reagente.")
+            Messagebox.show_warning("Informe o Nome do reagente.", "Atenção")
             self.ent_nome.focus()
             return
 
         formula= self.ent_formula.get().strip()
+        if not formula:
+            Messagebox.show_warning("Informe a Fórmula do reagente.", "Atenção")
+            self.ent_formula.focus()
+            return
         cas= self.ent_cas.get().strip() 
+        if not cas:
+            Messagebox.show_warning("Informe o CAS do reagente.", "Atenção")
+            self.ent_cas.focus()
+            return
         unidade= self.cmb_unidade.get().strip()
+        if not unidade:
+            Messagebox.show_warning("Informe a Unidade do reagente.", "Atenção")
+            try:
+                self.cmb_unidade.focus()
+            except Exception:
+                pass
+            return
 
         qtd_txt =(self.ent_qtd.get() or "").strip().replace(",", ".")
+        if not qtd_txt:
+            Messagebox.show_warning("Informe a Quantidade do reagente.", "Atenção")
+            self.ent_qtd.focus()
+            return
         quantidade = None
-
-        #Verificação para valores quebrados
-        if qtd_txt:
-            try:
-                quantidade = float(qtd_txt)
-            except ValueError:
-                print("Aviso: Quantidade inválida. Use números (ex.: 250 ou 250,5).")
-                self.ent_qtd.focus()
-                return
+        # Verificação para valores quebrados
+        try:
+            quantidade = float(qtd_txt)
+        except ValueError:
+            Messagebox.show_warning("Quantidade inválida. Use números (ex.: 250 ou 250,5).", "Atenção")
+            self.ent_qtd.focus()
+            return
 
         armario= self.ent_armario.get().strip()
         prateleira= self.ent_prateleira.get().strip() 
         posicao= self.ent_posicao.get().strip() 
 
         # Fecha a janela primeiro para evitar quebra o loop pricipal 
-        parent = getattr(self.win, 'master', None)
+        parent = getattr(self.janela, 'master', None)
         try:
             try:
                 #TENTA LIBERAR O GRAP SE ESTIVER PRESENTE
-                self.win.grab_release()
+                self.janela.grab_release()
             except Exception:
                 pass
             try:
-                self.win.destroy()
+                self.janela.destroy()
             except Exception:
                 pass
         except Exception:
             pass
 
         def PosRodar(novo_id=None, erro=None):
-            if erro is not None:
-                print('Erro ao cadastrar:', erro)
-            else:
-                print(f'Reagente cadastrado (Id {novo_id}).')
-            if callable(self.on_saved):
-                try:
-                    self.on_saved()
-                except Exception as ex:
-                    print('Erro ao executar on_saved:', ex)
-
-
-    def confirmar_salvar(self):
-        """Exibe o diálogo de confirmação antes de salvar."""
-        proceed = messagebox.askyesno(
-            title="Confirmar edição",
-            message=("As alterações neste reagente podem impactar a geração de formulários, "
-                     "etiquetas e relatórios que utilizam estes dados.\n\n"
-                     "Deseja realmente salvar as alterações?")
-        )
-        if proceed:
-            # Se confirmado, chama a função final de edição e salvamento assíncrono.
-            Salvar()
-        else:
-            return
-
-        def Salvar(self):
             try:
-                novo_id = self.controller.editar_reagentes(nome, formula, cas, unidade, quantidade, armario, prateleira, posicao, None )
+                if erro is not None:
+                    # mostra erro na UI
+                    if parent is not None:
+                        try:
+                            parent.after(0, lambda: Messagebox.show_error(f'Erro ao cadastrar:\n{erro}', 'Erro'))
+                        except Exception:
+                            Messagebox.show_error(f'Erro ao cadastrar:\n{erro}', 'Erro')
+                    else:
+                        Messagebox.show_error(f'Erro ao cadastrar:\n{erro}', 'Erro')
+                else:
+                    if parent is not None:
+                        try:
+                            parent.after(0, lambda: Messagebox.show_info(f'Reagente cadastrado (Id {novo_id}).', 'Sucesso'))
+                        except Exception:
+                            Messagebox.show_info(f'Reagente cadastrado (Id {novo_id}).', 'Sucesso')
+                    else:
+                        Messagebox.show_info(f'Reagente cadastrado (Id {novo_id}).', 'Sucesso')
+                if callable(self.on_saved):
+                    try:
+                        self.on_saved()
+                    except Exception as ex:
+                        print('Erro ao executar on_saved:', ex)
+            except Exception:
+                pass
+
+        def Salvar():
+            try:
+                novo_id = self.controller.cadastrar_Reagente(nome, formula, cas, unidade, quantidade, armario, prateleira, posicao, None )
                 if parent is not None:
                     try:
                         parent.after(0, lambda: PosRodar(novo_id, None))
