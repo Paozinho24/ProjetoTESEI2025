@@ -10,12 +10,12 @@ class TelaRelatorios:
     def __init__(self, master, controller, on_done=None):
         self.controller = controller
         self.on_done = on_done
-        self.win = ttk.Toplevel(master)
-        self.win.title('Relatórios de Movimentações')
-        self.win.transient(master)
-        self.win.grab_set()
+        self.janela = ttk.Toplevel(master)
+        self.janela.title('Relatórios de Movimentações')
+        self.janela.transient(master)
+        self.janela.grab_set()
 
-        body = ttk.Frame(self.win, padding=12)
+        body = ttk.Frame(self.janela, padding=12)
         body.pack(fill='both', expand=True)
 
         ttk.Label(body, text='Data início (YYYY-MM-DD):').grid(row=0, column=0, sticky='w')
@@ -30,7 +30,7 @@ class TelaRelatorios:
         btns.grid(row=2, column=0, columnspan=2, pady=(12,0))
 
         ttk.Button(btns, text='Gerar PDF', bootstyle='success', command=self.gerar_pdf).pack(side='left', padx=6)
-        ttk.Button(btns, text='Cancelar', command=self.win.destroy).pack(side='left', padx=6)
+        ttk.Button(btns, text='Cancelar', command=self.janela.destroy).pack(side='left', padx=6)
 
         body.grid_columnconfigure(1, weight=1)
 
@@ -54,18 +54,43 @@ class TelaRelatorios:
         try:
             rows = self.controller.listar_movimentacoes_periodo(inicio, fim)
         except Exception as ex:
-            Messagebox.show_error(f'Erro ao buscar movimentações:\n{ex}', 'Erro')
+            try:
+                self.janela.after(0, lambda: Messagebox.show_error(f'Erro ao buscar movimentações:\n{ex}', 'Erro'))
+            except Exception:
+                Messagebox.show_error(f'Erro ao buscar movimentações:\n{ex}', 'Erro')
             return
 
         # diálogo para salvar arquivo (usar filedialog do Tk)
         try:
-            from tkinter import filedialog
-            sugest = f"relatorio_movimentacoes_{inicio.replace('-','')}_{fim.replace('-','')}.pdf"
-            dest = filedialog.asksaveasfilename(defaultextension='.pdf', initialfile=sugest, filetypes=[('PDF','*.pdf')])
+            # ask file destination on main thread because filedialog must run in GUI thread
+            dest_container = {'dest': None}
+
+            def ask_dest():
+                from tkinter import filedialog
+                sugest = f"relatorio_movimentacoes_{inicio.replace('-','')}_{fim.replace('-','')}.pdf"
+                d = filedialog.asksaveasfilename(defaultextension='.pdf', initialfile=sugest, filetypes=[('PDF','*.pdf')])
+                dest_container['dest'] = d
+
+            try:
+                self.janela.after(0, ask_dest)
+                # wait for the dialog result by polling
+                import time
+                while dest_container['dest'] is None:
+                    time.sleep(0.05)
+            except Exception:
+                # fallback: try to call directly (may fail if not main thread)
+                from tkinter import filedialog
+                sugest = f"relatorio_movimentacoes_{inicio.replace('-','')}_{fim.replace('-','')}.pdf"
+                dest_container['dest'] = filedialog.asksaveasfilename(defaultextension='.pdf', initialfile=sugest, filetypes=[('PDF','*.pdf')])
+
+            dest = dest_container['dest']
             if not dest:
                 return
         except Exception as ex:
-            Messagebox.show_error(f'Erro ao abrir diálogo de salvar:\n{ex}', 'Erro')
+            try:
+                self.janela.after(0, lambda: Messagebox.show_error(f'Erro ao abrir diálogo de salvar:\n{ex}', 'Erro'))
+            except Exception:
+                Messagebox.show_error(f'Erro ao abrir diálogo de salvar:\n{ex}', 'Erro')
             return
 
         try:
@@ -86,6 +111,12 @@ class TelaRelatorios:
                     c.showPage()
                     y = height - 40
             c.save()
-            Messagebox.show_info(f'PDF salvo em: {dest}', 'Sucesso')
+            try:
+                self.janela.after(0, lambda: Messagebox.show_info(f'PDF salvo em: {dest}', 'Sucesso'))
+            except Exception:
+                Messagebox.show_info(f'PDF salvo em: {dest}', 'Sucesso')
         except Exception as ex:
-            Messagebox.show_error(f'Erro ao gerar PDF:\n{ex}', 'Erro')
+            try:
+                self.janela.after(0, lambda: Messagebox.show_error(f'Erro ao gerar PDF:\n{ex}', 'Erro'))
+            except Exception:
+                Messagebox.show_error(f'Erro ao gerar PDF:\n{ex}', 'Erro')

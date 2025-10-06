@@ -13,16 +13,16 @@ class TelaEditarReagente:
     
         self.controller = controller
         self.on_saved = on_saved
-        self.win = tk.Toplevel(master)
-        self.win.title("Editar Reagente")
-        self.win.transient(master)
+        self.janela = tk.Toplevel(master)
+        self.janela.title("Editar Reagente")
+        self.janela.transient(master)
 
         try:
-            self.win.geometry("420x420")
+            self.janela.geometry("420x420")
         except Exception:
             pass
 
-        form = ttk.Frame(self.win, padding=12)
+        form = ttk.Frame(self.janela, padding=12)
         form.pack(fill="both", expand=True)
 
         # Extrai valores com fallback
@@ -67,7 +67,7 @@ class TelaEditarReagente:
         btns = ttk.Frame(form)
         btns.grid(row=8, column=0, columnspan=2, pady=(12, 0))
         ttk.Button(btns, text="Salvar", bootstyle="success", command=self.salvar).pack(side="left", padx=6)
-        ttk.Button(btns, text="Cancelar", command=self.win.destroy).pack(side="left", padx=6)
+        ttk.Button(btns, text="Cancelar", command=self.janela.destroy).pack(side="left", padx=6)
 
         form.grid_columnconfigure(1, weight=1)
         self.ent_nome.focus()
@@ -88,7 +88,17 @@ class TelaEditarReagente:
         
         nome = self.ent_nome.get().strip()
         if not nome:
-            print("Aviso: Informe o Nome do reagente.")
+            parent = getattr(self.janela, 'master', None)
+            try:
+                if parent is not None:
+                    parent.after(0, lambda: Messagebox.show_warning("Informe o Nome do reagente.", "Atenção"))
+                else:
+                    Messagebox.show_warning("Informe o Nome do reagente.", "Atenção")
+            except Exception:
+                try:
+                    Messagebox.show_warning("Informe o Nome do reagente.", "Atenção")
+                except Exception:
+                    print("Aviso: Informe o Nome do reagente.")
             self.ent_nome.focus()
             return
 
@@ -102,7 +112,17 @@ class TelaEditarReagente:
             try:
                 quantidade = float(qtd_txt)
             except ValueError:
-                print("Aviso: Quantidade inválida. Use números (ex.: 250 ou 250,5).")
+                parent = getattr(self.janela, 'master', None)
+                try:
+                    if parent is not None:
+                        parent.after(0, lambda: Messagebox.show_warning("Quantidade inválida. Use números (ex.: 250 ou 250,5).", "Atenção"))
+                    else:
+                        Messagebox.show_warning("Quantidade inválida. Use números (ex.: 250 ou 250,5).", "Atenção")
+                except Exception:
+                    try:
+                        Messagebox.show_warning("Quantidade inválida. Use números (ex.: 250 ou 250,5).", "Atenção")
+                    except Exception:
+                        print("Aviso: Quantidade inválida. Use números (ex.: 250 ou 250,5).")
                 self.ent_qtd.focus()
                 return
 
@@ -110,30 +130,49 @@ class TelaEditarReagente:
         prateleira = self.ent_prateleira.get().strip()
         posicao = self.ent_posicao.get().strip()
 
-        parent = getattr(self.win, 'master', None)
+        parent = getattr(self.janela, 'master', None)
 
         try:
             try:
-                self.win.grab_release()
+                self.janela.grab_release()
             except Exception:
                 pass
             try:
-                self.win.destroy()
+                self.janela.destroy()
             except Exception:
                 pass
         except Exception:
             pass
 
         def _after_actions(ok=None, erro=None):
+            parent = getattr(self.janela, 'master', None)
             if erro is not None:
-                print('Erro ao atualizar:', erro)
+                try:
+                    if parent is not None:
+                        parent.after(0, lambda: Messagebox.show_error(f'Erro ao atualizar:\n{erro}', 'Erro'))
+                    else:
+                        Messagebox.show_error(f'Erro ao atualizar:\n{erro}', 'Erro')
+                except Exception:
+                    print('Erro ao atualizar:', erro)
             else:
-                print(f'Reagente atualizado (Id {self.id_val}).')
+                try:
+                    if parent is not None:
+                        parent.after(0, lambda: Messagebox.show_info(f'Reagente atualizado (Id {self.id_val}).', 'Sucesso'))
+                    else:
+                        Messagebox.show_info(f'Reagente atualizado (Id {self.id_val}).', 'Sucesso')
+                except Exception:
+                    print(f'Reagente atualizado (Id {self.id_val}).')
             if callable(self.on_saved):
                 try:
                     self.on_saved()
                 except Exception as ex:
-                    print('Erro ao executar on_saved:', ex)
+                    try:
+                        if parent is not None:
+                            parent.after(0, lambda: Messagebox.show_error(f'Erro ao executar on_saved:\n{ex}', "Erro"))
+                        else:
+                            Messagebox.show_error(f'Erro ao executar on_saved:\n{ex}', "Erro")
+                    except Exception:
+                        print('Erro ao executar on_saved:', ex)
 
         def _do_update():
             try:
