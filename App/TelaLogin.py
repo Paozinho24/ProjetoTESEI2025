@@ -2,7 +2,6 @@ import ttkbootstrap as ttk
 from ttkbootstrap.dialogs import Messagebox
 from TelaPrincipal import TelaPrincipal
 from Control import ControllerGeral
-from ui_helpers import safe_messagebox
 
 ARQ_USUARIO = "ultimo_usuario.txt"
 
@@ -85,11 +84,11 @@ class TelaLogin:
         senha = self.entry_senha.get()
 
         if not cpf.strip():
-            safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "warning", "Informe o CPF.", "Atenção")
+            Messagebox.show_warning("Informe o CPF.", "Atenção")
             self.entry_usuario.focus()
             return
         if not senha:
-            safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "warning", "Informe a senha.", "Atenção")
+            Messagebox.show_warning("Informe a senha.", "Atenção")
             self.entry_senha.focus()
             return
 
@@ -122,9 +121,9 @@ class TelaLogin:
 
                 self.tela_principal.protocol("WM_DELETE_WINDOW", fechar_tudo)
             else:
-                safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "error", "CPF ou senha incorretos.", "Acesso negado")
+                Messagebox.show_error("CPF ou senha incorretos.", "Acesso negado")
         except Exception as ex:
-            safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "error", f"Erro ao validar login:\n{ex}", "Erro")
+            Messagebox.show_error(f"Erro ao validar login:\n{ex}", "Erro")
 
 
 gui = ttk.Window(themename="flatly")

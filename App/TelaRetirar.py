@@ -1,7 +1,6 @@
 import ttkbootstrap as ttk
 import threading
 from ttkbootstrap.dialogs import Messagebox
-from ui_helpers import safe_messagebox
 
 class TelaRetirar:
     def __init__(self, master, controller: object, reagente_vals: tuple, on_done: callable = None):
@@ -64,9 +63,9 @@ class TelaRetirar:
         except Exception as ex:
             # show on main thread
             try:
-                self.janela.after(0, lambda: safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "error", f'Erro ao iniciar retirada:\n{ex}', 'Erro'))
+                self.janela.after(0, lambda: Messagebox.show_error(f'Erro ao iniciar retirada:\n{ex}', 'Erro'))
             except Exception:
-                safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "error", f'Erro ao iniciar retirada:\n{ex}', 'Erro')
+                Messagebox.show_error(f'Erro ao iniciar retirada:\n{ex}', 'Erro')
 
     def _do_retirar(self, qtd, motivo, resp, projeto=None):
         try:
@@ -74,10 +73,10 @@ class TelaRetirar:
             self.controller.retirar_reagente(reagente_id, qtd, motivo, resp, projeto)
             # Notify on main thread
             try:
-                self.janela.after(0, lambda: safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "info", 'Retirada realizada com sucesso.', 'Sucesso'))
+                self.janela.after(0, lambda: Messagebox.show_info('Retirada realizada com sucesso.', 'Sucesso'))
             except Exception:
                 try:
-                    safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "info", 'Retirada realizada com sucesso.', 'Sucesso')
+                    Messagebox.show_info('Retirada realizada com sucesso.', 'Sucesso')
                 except Exception:
                     pass
             try:
@@ -95,9 +94,9 @@ class TelaRetirar:
         except Exception as ex:
             # Error on main thread
             try:
-                self.janela.after(0, lambda: safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "error", f'Erro ao retirar reagente:\n{ex}', 'Erro'))
+                self.janela.after(0, lambda: Messagebox.show_error(f'Erro ao retirar reagente:\n{ex}', 'Erro'))
             except Exception:
                 try:
-                    safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "error", f'Erro ao retirar reagente:\n{ex}', 'Erro')
+                    Messagebox.show_error(f'Erro ao retirar reagente:\n{ex}', 'Erro')
                 except Exception:
                     print('Erro ao retirar reagente:', ex)

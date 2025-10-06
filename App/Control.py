@@ -1,5 +1,4 @@
 import Model  
-from ui_helpers import safe_messagebox
 
 class ControllerGeral:
     def __init__(self):
