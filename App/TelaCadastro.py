@@ -2,7 +2,7 @@
 import tkinter as tk
 import threading
 import ttkbootstrap as ttk
-from ttkbootstrap.dialogs import Messagebox
+from tkinter import messagebox
 
 class TelaCadastro:
     def __init__(self, master, controller, on_saved=None):
@@ -60,23 +60,23 @@ class TelaCadastro:
         # Lê e valida
         nome   = self.ent_nome.get().strip()
         if not nome:
-            Messagebox.show_warning("Informe o Nome do reagente.", "Atenção")
+            messagebox.showinfo("Warning", "Informe o nome do reagente.")
             self.ent_nome.focus()
             return
 
         formula= self.ent_formula.get().strip()
         if not formula:
-            Messagebox.show_warning("Informe a Fórmula do reagente.", "Atenção")
+            messagebox.showinfo('warning', 'Informe a fórmula do reagente.')
             self.ent_formula.focus()
             return
         cas= self.ent_cas.get().strip() 
         if not cas:
-            Messagebox.show_warning("Informe o CAS do reagente.", "Atenção")
+            messagebox.showinfo("Warning", "Informe o CAS do reagente.")
             self.ent_cas.focus()
             return
         unidade= self.cmb_unidade.get().strip()
         if not unidade:
-            Messagebox.show_warning("Informe a Unidade do reagente.", "Atenção")
+            messagebox.showinfo('Warning', 'Informe a unidade do reagente')
             try:
                 self.cmb_unidade.focus()
             except Exception:
@@ -85,7 +85,7 @@ class TelaCadastro:
 
         qtd_txt =(self.ent_qtd.get() or "").strip().replace(",", ".")
         if not qtd_txt:
-            Messagebox.show_warning("Informe a Quantidade do reagente.", "Atenção")
+            messagebox.showinfo('Warning', "Informe a quantidade do reagente.")
             self.ent_qtd.focus()
             return
         quantidade = None
@@ -93,7 +93,7 @@ class TelaCadastro:
         try:
             quantidade = float(qtd_txt)
         except ValueError:
-            Messagebox.show_warning("Quantidade inválida. Use números (ex.: 250 ou 250,5).", "Atenção")
+            messagebox.showinfo('Warning', 'Quantidade inválida. Use números (ex.: 250 ou 250,5)')
             self.ent_qtd.focus()
             return
 
@@ -122,19 +122,20 @@ class TelaCadastro:
                     # mostra erro na UI
                     if parent is not None:
                         try:
-                            parent.after(0, lambda: Messagebox.show_error(f'Erro ao cadastrar:\n{erro}', 'Erro'))
+                            messagebox.showerror('Erro Cadastro', f'Erro ao Cadastrar: {erro}')
+
                         except Exception:
-                            Messagebox.show_error(f'Erro ao cadastrar:\n{erro}', 'Erro')
+                            messagebox.showerror('Erro Cadastro', f'Erro ao Cadastrar: {erro}')
                     else:
-                        Messagebox.show_error(f'Erro ao cadastrar:\n{erro}', 'Erro')
-                else:
-                    if parent is not None:
-                        try:
-                            parent.after(0, lambda: Messagebox.show_info(f'Reagente cadastrado (Id {novo_id}).', 'Sucesso'))
-                        except Exception:
-                            Messagebox.show_info(f'Reagente cadastrado (Id {novo_id}).', 'Sucesso')
-                    else:
-                        Messagebox.show_info(f'Reagente cadastrado (Id {novo_id}).', 'Sucesso')
+                        messagebox.showerror('Erro Cadastro', f'Erro ao cadastrar: {erro}')
+                # else:
+                #     if parent is not None:
+                #         try:
+                #             parent.after(0, lambda: safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "info", f'Reagente cadastrado (Id {novo_id}).', 'Sucesso'))
+                #         except Exception:
+                #             safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "info", f'Reagente cadastrado (Id {novo_id}).', 'Sucesso')
+                #     else:
+                #         safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "info", f'Reagente cadastrado (Id {novo_id}).', 'Sucesso')
                 if callable(self.on_saved):
                     try:
                         self.on_saved()
