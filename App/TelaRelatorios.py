@@ -5,6 +5,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from datetime import datetime
 import os
+from ui_helpers import safe_messagebox
 
 class TelaRelatorios:
     def __init__(self, master, controller, on_done=None):
@@ -13,7 +14,7 @@ class TelaRelatorios:
         self.janela = ttk.Toplevel(master)
         self.janela.title('Relatórios de Movimentações')
         self.janela.transient(master)
-        self.janela.grab_set()
+        self.janela
 
         body = ttk.Frame(self.janela, padding=12)
         body.pack(fill='both', expand=True)
@@ -38,14 +39,14 @@ class TelaRelatorios:
         inicio = self.entry_inicio.get().strip()
         fim = self.entry_fim.get().strip()
         if not inicio or not fim:
-            Messagebox.show_warning('Informe data início e fim', 'Atenção')
+            safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "warning", 'Informe data início e fim', 'Atenção')
             return
         try:
             # validação básica de formato
             datetime.strptime(inicio[:10], '%Y-%m-%d')
             datetime.strptime(fim[:10], '%Y-%m-%d')
         except Exception:
-            Messagebox.show_error('Formato de data inválido. Use YYYY-MM-DD', 'Erro')
+            safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "error", 'Formato de data inválido. Use YYYY-MM-DD', 'Erro')
             return
 
         threading.Thread(target=self._gerar_pdf_thread, args=(inicio, fim), daemon=True).start()
@@ -55,9 +56,9 @@ class TelaRelatorios:
             rows = self.controller.listar_movimentacoes_periodo(inicio, fim)
         except Exception as ex:
             try:
-                self.janela.after(0, lambda: Messagebox.show_error(f'Erro ao buscar movimentações:\n{ex}', 'Erro'))
+                self.janela.after(0, lambda: safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "error", f'Erro ao buscar movimentações:\n{ex}', 'Erro'))
             except Exception:
-                Messagebox.show_error(f'Erro ao buscar movimentações:\n{ex}', 'Erro')
+                safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "error", f'Erro ao buscar movimentações:\n{ex}', 'Erro')
             return
 
         # diálogo para salvar arquivo (usar filedialog do Tk)
@@ -88,9 +89,9 @@ class TelaRelatorios:
                 return
         except Exception as ex:
             try:
-                self.janela.after(0, lambda: Messagebox.show_error(f'Erro ao abrir diálogo de salvar:\n{ex}', 'Erro'))
+                self.janela.after(0, lambda: safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "error", f'Erro ao abrir diálogo de salvar:\n{ex}', 'Erro'))
             except Exception:
-                Messagebox.show_error(f'Erro ao abrir diálogo de salvar:\n{ex}', 'Erro')
+                safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "error", f'Erro ao abrir diálogo de salvar:\n{ex}', 'Erro')
             return
 
         try:
@@ -112,11 +113,11 @@ class TelaRelatorios:
                     y = height - 40
             c.save()
             try:
-                self.janela.after(0, lambda: Messagebox.show_info(f'PDF salvo em: {dest}', 'Sucesso'))
+                self.janela.after(0, lambda: safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "info", f'PDF salvo em: {dest}', 'Sucesso'))
             except Exception:
-                Messagebox.show_info(f'PDF salvo em: {dest}', 'Sucesso')
+                safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "info", f'PDF salvo em: {dest}', 'Sucesso')
         except Exception as ex:
             try:
-                self.janela.after(0, lambda: Messagebox.show_error(f'Erro ao gerar PDF:\n{ex}', 'Erro'))
+                self.janela.after(0, lambda: safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "error", f'Erro ao gerar PDF:\n{ex}', 'Erro'))
             except Exception:
-                Messagebox.show_error(f'Erro ao gerar PDF:\n{ex}', 'Erro')
+                safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "error", f'Erro ao gerar PDF:\n{ex}', 'Erro')

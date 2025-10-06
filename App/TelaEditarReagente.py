@@ -2,6 +2,7 @@ import tkinter as tk
 import threading
 import ttkbootstrap as ttk
 from ttkbootstrap.dialogs import Messagebox
+from ui_helpers import safe_messagebox
 
 class TelaEditarReagente:
     def __init__(self, master, controller, reagente_values: tuple, on_saved=None):
@@ -91,12 +92,12 @@ class TelaEditarReagente:
             parent = getattr(self.janela, 'master', None)
             try:
                 if parent is not None:
-                    parent.after(0, lambda: Messagebox.show_warning("Informe o Nome do reagente.", "Atenção"))
+                    parent.after(0, lambda: safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "warning", "Informe o Nome do reagente.", "Atenção"))
                 else:
-                    Messagebox.show_warning("Informe o Nome do reagente.", "Atenção")
+                    safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "warning", "Informe o Nome do reagente.", "Atenção")
             except Exception:
                 try:
-                    Messagebox.show_warning("Informe o Nome do reagente.", "Atenção")
+                    safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "warning", "Informe o Nome do reagente.", "Atenção")
                 except Exception:
                     print("Aviso: Informe o Nome do reagente.")
             self.ent_nome.focus()
@@ -115,12 +116,12 @@ class TelaEditarReagente:
                 parent = getattr(self.janela, 'master', None)
                 try:
                     if parent is not None:
-                        parent.after(0, lambda: Messagebox.show_warning("Quantidade inválida. Use números (ex.: 250 ou 250,5).", "Atenção"))
+                        parent.after(0, lambda: safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "warning", "Quantidade inválida. Use números (ex.: 250 ou 250,5).", "Atenção"))
                     else:
-                        Messagebox.show_warning("Quantidade inválida. Use números (ex.: 250 ou 250,5).", "Atenção")
+                        safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "warning", "Quantidade inválida. Use números (ex.: 250 ou 250,5).", "Atenção")
                 except Exception:
                     try:
-                        Messagebox.show_warning("Quantidade inválida. Use números (ex.: 250 ou 250,5).", "Atenção")
+                        safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "warning", "Quantidade inválida. Use números (ex.: 250 ou 250,5).", "Atenção")
                     except Exception:
                         print("Aviso: Quantidade inválida. Use números (ex.: 250 ou 250,5).")
                 self.ent_qtd.focus()
@@ -149,17 +150,17 @@ class TelaEditarReagente:
             if erro is not None:
                 try:
                     if parent is not None:
-                        parent.after(0, lambda: Messagebox.show_error(f'Erro ao atualizar:\n{erro}', 'Erro'))
+                        parent.after(0, lambda: safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "error", f'Erro ao atualizar:\n{erro}', 'Erro'))
                     else:
-                        Messagebox.show_error(f'Erro ao atualizar:\n{erro}', 'Erro')
+                        safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "error", f'Erro ao atualizar:\n{erro}', 'Erro')
                 except Exception:
                     print('Erro ao atualizar:', erro)
             else:
                 try:
                     if parent is not None:
-                        parent.after(0, lambda: Messagebox.show_info(f'Reagente atualizado (Id {self.id_val}).', 'Sucesso'))
+                        parent.after(0, lambda: safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "info", f'Reagente atualizado (Id {self.id_val}).', 'Sucesso'))
                     else:
-                        Messagebox.show_info(f'Reagente atualizado (Id {self.id_val}).', 'Sucesso')
+                        safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "info", f'Reagente atualizado (Id {self.id_val}).', 'Sucesso')
                 except Exception:
                     print(f'Reagente atualizado (Id {self.id_val}).')
             if callable(self.on_saved):
@@ -168,9 +169,9 @@ class TelaEditarReagente:
                 except Exception as ex:
                     try:
                         if parent is not None:
-                            parent.after(0, lambda: Messagebox.show_error(f'Erro ao executar on_saved:\n{ex}', "Erro"))
+                            parent.after(0, lambda: safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "error", f'Erro ao executar on_saved:\n{ex}', "Erro"))
                         else:
-                            Messagebox.show_error(f'Erro ao executar on_saved:\n{ex}', "Erro")
+                            safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "error", f'Erro ao executar on_saved:\n{ex}', "Erro")
                     except Exception:
                         print('Erro ao executar on_saved:', ex)
 

@@ -3,6 +3,7 @@ import tkinter as tk
 import threading
 import ttkbootstrap as ttk
 from ttkbootstrap.dialogs import Messagebox
+from ui_helpers import safe_messagebox
 
 class TelaCadastro:
     def __init__(self, master, controller, on_saved=None):
@@ -60,23 +61,23 @@ class TelaCadastro:
         # Lê e valida
         nome   = self.ent_nome.get().strip()
         if not nome:
-            Messagebox.show_warning("Informe o Nome do reagente.", "Atenção")
+            safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "warning", "Informe o Nome do reagente.", "Atenção")
             self.ent_nome.focus()
             return
 
         formula= self.ent_formula.get().strip()
         if not formula:
-            Messagebox.show_warning("Informe a Fórmula do reagente.", "Atenção")
+            safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "warning", "Informe a Fórmula do reagente.", "Atenção")
             self.ent_formula.focus()
             return
         cas= self.ent_cas.get().strip() 
         if not cas:
-            Messagebox.show_warning("Informe o CAS do reagente.", "Atenção")
+            safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "warning", "Informe o CAS do reagente.", "Atenção")
             self.ent_cas.focus()
             return
         unidade= self.cmb_unidade.get().strip()
         if not unidade:
-            Messagebox.show_warning("Informe a Unidade do reagente.", "Atenção")
+            safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "warning", "Informe a Unidade do reagente.", "Atenção")
             try:
                 self.cmb_unidade.focus()
             except Exception:
@@ -85,7 +86,7 @@ class TelaCadastro:
 
         qtd_txt =(self.ent_qtd.get() or "").strip().replace(",", ".")
         if not qtd_txt:
-            Messagebox.show_warning("Informe a Quantidade do reagente.", "Atenção")
+            safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "warning", "Informe a Quantidade do reagente.", "Atenção")
             self.ent_qtd.focus()
             return
         quantidade = None
@@ -93,7 +94,7 @@ class TelaCadastro:
         try:
             quantidade = float(qtd_txt)
         except ValueError:
-            Messagebox.show_warning("Quantidade inválida. Use números (ex.: 250 ou 250,5).", "Atenção")
+            safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "warning", "Quantidade inválida. Use números (ex.: 250 ou 250,5).", "Atenção")
             self.ent_qtd.focus()
             return
 
@@ -122,19 +123,19 @@ class TelaCadastro:
                     # mostra erro na UI
                     if parent is not None:
                         try:
-                            parent.after(0, lambda: Messagebox.show_error(f'Erro ao cadastrar:\n{erro}', 'Erro'))
+                            parent.after(0, lambda: safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "error", f'Erro ao cadastrar:\n{erro}', 'Erro'))
                         except Exception:
-                            Messagebox.show_error(f'Erro ao cadastrar:\n{erro}', 'Erro')
+                            safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "error", f'Erro ao cadastrar:\n{erro}', 'Erro')
                     else:
-                        Messagebox.show_error(f'Erro ao cadastrar:\n{erro}', 'Erro')
-                else:
-                    if parent is not None:
-                        try:
-                            parent.after(0, lambda: Messagebox.show_info(f'Reagente cadastrado (Id {novo_id}).', 'Sucesso'))
-                        except Exception:
-                            Messagebox.show_info(f'Reagente cadastrado (Id {novo_id}).', 'Sucesso')
-                    else:
-                        Messagebox.show_info(f'Reagente cadastrado (Id {novo_id}).', 'Sucesso')
+                        safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "error", f'Erro ao cadastrar:\n{erro}', 'Erro')
+                # else:
+                #     if parent is not None:
+                #         try:
+                #             parent.after(0, lambda: safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "info", f'Reagente cadastrado (Id {novo_id}).', 'Sucesso'))
+                #         except Exception:
+                #             safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "info", f'Reagente cadastrado (Id {novo_id}).', 'Sucesso')
+                #     else:
+                #         safe_messagebox(self.janela if hasattr(self, 'janela') else (self.master if hasattr(self, 'master') else None), "info", f'Reagente cadastrado (Id {novo_id}).', 'Sucesso')
                 if callable(self.on_saved):
                     try:
                         self.on_saved()

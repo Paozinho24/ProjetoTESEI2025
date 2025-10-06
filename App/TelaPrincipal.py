@@ -1,3 +1,5 @@
+
+from importlib import import_module
 import ttkbootstrap as ttk
 from ttkbootstrap.dialogs import Messagebox
 from ttkbootstrap.constants import *
@@ -5,18 +7,20 @@ from Control import ControllerGeral
 from Model import Model
 from TelaCadastro import TelaCadastro
 from TelaEditarReagente import TelaEditarReagente
+from ui_helpers import safe_messagebox
 
 
 class TelaPrincipal():
     def __init__(self, master, nome_usuario="Usuário", cpf_usuario=None):
         self.model = Model()
         self.controller = ControllerGeral()
+        # PARENT VISÍVEL E CONSISTENTE
         self.janela_tela_principal = master
 
         # Pode falhar no Linux; não é crítico
         try:
             self.janela_tela_principal.state('zoomed')
-        except:
+        except Exception:
             pass
 
         style = ttk.Style()
@@ -44,13 +48,11 @@ class TelaPrincipal():
         # TOPO (barra superior) 
         self.frame_superior = ttk.Frame(container, bootstyle='primary')
         self.frame_superior.pack(side='top', fill='x')
-        # NÃO force height fixo aqui!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!; deixe o conteúdo determinar a altura
 
         # Área logout dentro do topo
         self.frame_logout = ttk.Frame(self.frame_superior, bootstyle='primary')
         self.frame_logout.pack(side='right', padx=40, pady=10)
         self.lbl_logout = ttk.Label(self.frame_logout,text=f'Olá, {nome_usuario}',bootstyle='inverse-primary',font=('TkDefaultFont', 12, 'bold'))
-        self.lbl_logout.pack(side='bottom', pady=10)
         self.lbl_logout.pack(side='left', padx=(0,10))
         self.botao_logout = ttk.Button(self.frame_logout, text='Logout', bootstyle='secondary', command=self.logout)
         self.botao_logout.pack(side='left')
@@ -105,7 +107,6 @@ class TelaPrincipal():
         self.botao_editar = ttk.Button(self.frame_inferior_botoes, text='Editar', bootstyle='warning' , width=15 , padding=(10), command=self.abrirEditar)
         self.botao_retirar    = ttk.Button(self.frame_inferior_botoes, text='Retirar',     bootstyle='primary', width=15, command=self.abrirRetirar)
 
-
         self.botao_cadastrar.pack(side='left', padx=8)
         self.botao_relatorios.pack(side='left', padx=8)
         self.botao_editar.pack(side="left", padx=8)
@@ -117,7 +118,6 @@ class TelaPrincipal():
         
     # #Funções de da Tela
     def logout(self):
-    
         # Tenta recuperar a janela pai (se existir)
         TelaPai = self.janela_tela_principal.master if hasattr(self.janela_tela_principal, 'master') else None
 
@@ -156,14 +156,16 @@ class TelaPrincipal():
         except Exception as ex:
             print('Erro ao abrir TelaUsuarios:', ex)
 
+    def _parent(self):
+        # SEMPRE use a janela principal visível como parent
+        return self.janela_tela_principal
+
     def abrirEditar(self):
         # Abre a tela de edição para o reagente selecionado na treeview
         sel = self.tabela.selection()
         if not sel:
-            try:
-                self.janela_tela_principal.after(0, lambda: Messagebox.show_warning('Aviso: selecione um reagente para editar.'))
-            except Exception:
-                Messagebox.show_warning('Aviso: selecione um reagente para editar.')
+            # Sempre usa o parent correto e título claro
+            self.janela_tela_principal.after(0, lambda: safe_messagebox(self._parent(), "warning", "Selecione um reagente para editar.", "Aviso"))
             return
         try:
             item = self.tabela.item(sel[0])
@@ -171,10 +173,7 @@ class TelaPrincipal():
             # Abre a tela de edição em top-level
             TelaEditarReagente(self.janela_tela_principal, self.controller, vals, on_saved=self.recarregarTabela)
         except Exception as ex:
-            try:
-                self.janela_tela_principal.after(0, lambda: Messagebox.show_warning('Erro ao abrir a tela de edição: ' + str(ex)))
-            except Exception:
-                Messagebox.show_warning('Erro ao abrir a tela de edição: ' + str(ex))
+            self.janela_tela_principal.after(0, lambda: safe_messagebox(self._parent(), "warning", "Erro ao abrir a tela de edição: " + str(ex), "Aviso"))
 
     def abrirRelatorios(self):
         try:
@@ -182,18 +181,12 @@ class TelaPrincipal():
             from TelaRelatorios import TelaRelatorios
             TelaRelatorios(topo, self.controller)
         except Exception as ex:
-             try:
-                 self.janela_tela_principal.after(0, lambda: Messagebox.show_warning('Erro ao abrir TelaRelatorios: ' + str(ex)))
-             except Exception:
-                 Messagebox.show_warning('Erro ao abrir TelaRelatorios: ' + str(ex))
+            self.janela_tela_principal.after(0, lambda: safe_messagebox(self._parent(), "warning", "Erro ao abrir TelaRelatorios: " + str(ex), "Aviso"))
 
     def abrirRetirar(self):
         sel = self.tabela.selection()
         if not sel:
-            try:
-                self.janela_tela_principal.after(0, lambda: Messagebox.show_warning('Aviso: selecione um reagente para retirar.'))
-            except Exception:
-                Messagebox.show_warning('Aviso: selecione um reagente para retirar.')
+            self.janela_tela_principal.after(0, lambda: safe_messagebox(self._parent(), "warning", "Selecione um reagente para retirar.", "Aviso"))
             return
         try:
             item = self.tabela.item(sel[0])
@@ -201,10 +194,7 @@ class TelaPrincipal():
             from TelaRetirar import TelaRetirar
             TelaRetirar(self.janela_tela_principal, self.controller, vals, on_done=self.recarregarTabela)
         except Exception as ex:
-            try:
-                self.janela_tela_principal.after(0, lambda: Messagebox.show_warning('Erro ao abrir a tela de retirada: ' + str(ex)))
-            except Exception:
-                Messagebox.show_warning('Erro ao abrir a tela de retirada: ' + str(ex))
+            self.janela_tela_principal.after(0, lambda: safe_messagebox(self._parent(), "warning", "Erro ao abrir a tela de retirada: " + str(ex), "Aviso"))
 
     def recarregarTabela(self):
         # Limpa e recarrega a Treeview
@@ -212,23 +202,14 @@ class TelaPrincipal():
             self.tabela.delete(item)
         self.carregar_dados_tabela()
 
-# Carrega os dados da Tabela
+    # Carrega os dados da Tabela
     def carregar_dados_tabela(self):
         try:
             linhas = self.controller.listar_reagentes_localizacao()
-            # print(linhas) debugbolado
             for linha in linhas:
                 self.tabela.insert('', 'end', values=(
                     linha[0], linha[1], linha[2], linha[3], linha[4],
                     linha[5], linha[6], linha[7], linha[8]
                 ))
         except Exception as ex:
-            try:
-                self.janela_tela_principal.after(0, lambda: Messagebox.show_warning("Erro ao carregar dados da tabela: " + str(ex)))
-            except Exception:
-                Messagebox.show_warning("Erro ao carregar dados da tabela: " + str(ex))
-
-
-# gui = ttk.Window(themename="flatly")
-# TelaPrincipal(gui)
-# gui.mainloop()
+            self.janela_tela_principal.after(0, lambda: safe_messagebox(self._parent(), "warning", "Erro ao carregar dados da tabela: " + str(ex), "Aviso"))
