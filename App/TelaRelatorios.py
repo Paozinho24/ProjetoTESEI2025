@@ -12,6 +12,7 @@ class TelaRelatorios:
         self.on_done = on_done
         self.janela = ttk.Toplevel(master)
         self.janela.title('Relatórios de Movimentações')
+        self.janela.geometry('300x200+700+300')
         self.janela.transient(master)
         self.janela
 

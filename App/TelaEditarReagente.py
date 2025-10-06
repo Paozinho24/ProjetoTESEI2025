@@ -40,7 +40,7 @@ class TelaEditarReagente():
         posicao = reagente_values[8] if len(reagente_values) > 8 else ""
 
         # Campos
-        self.ent_nome = self.LinhaForm(form, 0, "Nome*")
+        self.ent_nome = self.LinhaForm(form, 0, "Nome")
         self.ent_formula = self.LinhaForm(form, 1, "Fórmula")
         self.ent_cas = self.LinhaForm(form, 2, "CAS")
         self.cmb_unidade = self.ComboForm(form, 3, "Unidade", ("g", "mg", "kg", "mL", "L", "unid"))
@@ -109,51 +109,65 @@ class TelaEditarReagente():
         """
 
         nome = self.ent_nome.get().strip()
-        cas = self.ent_cas.get().strip().replace("-", "").replace(' ', '')
-        qtd_txt = (self.ent_qtd.get() or "").strip().replace(",", ".")
-
-        # Validar o nome
         if not nome:
 
             messagebox.showinfo(title='Nome Necessário', message="Insira o nome do reagente")
             self.ent_nome.focus()
             return
 
-        #Validar o CAS
-        if cas:
-            try:
-                digitos = cas.replace('-', "").replace(" ", "")
-                if not digitos.isdigit() or len(digitos) < 5:
-                     raise ValueError('Formato CAS inválido')
-                
-                checksum_original = int(digitos[-1])
-                digitos_verificacao = digitos[:-1]
-                soma = 0
-                for i, digito_char in enumerate(reversed(digitos_verificacao)):
-                    multiplicador = i + 1
-                    soma += int(digito_char) * multiplicador
-                    
-                checksum_calculado = soma % 10
+        formula= self.ent_formula.get().strip()
+        if not formula:
+            messagebox.showinfo('warning', 'Informe a fórmula do reagente.')
+            self.ent_formula.focus()
+            return
 
-                if checksum_original != checksum_calculado:
-                    raise ValueError('O CAS inserido não é valido!')
+        #Validar o CAS
+        cas = self.ent_cas.get()
+        try:
+            digitos = cas.replace('-', "").replace(" ", "")
+            if not digitos.isdigit() or len(digitos) < 5:
+                    raise ValueError('Formato CAS inválido')
+            
+            checksum_original = int(digitos[-1])
+            digitos_verificacao = digitos[:-1]
+            soma = 0
+            for i, digito_char in enumerate(reversed(digitos_verificacao)):
+                multiplicador = i + 1
+                soma += int(digito_char) * multiplicador
                 
-            except (ValueError, IndexError):
-                messagebox.showerror(title='Cas Inválido', message="O CAS inserido não é válido ou está incompleto.")
-                self.ent_cas.focus()
-                return
+            checksum_calculado = soma % 10
+
+            if checksum_original != checksum_calculado:
+                raise ValueError('O CAS inserido não é valido!')
+            
+        except (ValueError, IndexError):
+            messagebox.showerror(title='Cas Inválido', message="O CAS não foi inserido ou está incompleto.")
+            self.ent_cas.focus()
+            return
         
-        # Validar quantidade (se preenchida)
-        if qtd_txt:
+        #Validar_Unidade
+        unidade= self.cmb_unidade.get().strip()
+        print(unidade)
+        if not unidade or unidade not in self.cmb_unidade['values']:
+            messagebox.showinfo('Warning', 'Informe a unidade do reagente')
             try:
-                float(qtd_txt)
-            except ValueError:
-                messagebox.showerror(title='Quantidade Inválida', message='Aviso: Quantidade inválida. Use números (ex.: 250 ou 250,5)')
-                self.ent_qtd.focus()
-                return
+                self.cmb_unidade.focus()
+            except Exception:
+                pass
+            return
         
+        quantidade = self.ent_qtd.get().strip()
+        qtd_txt =(self.ent_qtd.get() or "").strip().replace(",", ".")
+        try:
         # Se a validação passou, prossegue para a confirmação
-        self.confirmar_salvar()
+            quantidade = float(qtd_txt)
+            self.confirmar_salvar()
+        except ValueError:
+            messagebox.showinfo('Warning', 'Insira uma quantidade inválida. Use números (ex.: 250 ou 250,5)')
+            self.ent_qtd.focus()
+            return
+        
+        
 
     def _finalizar_edicao(self):
         """

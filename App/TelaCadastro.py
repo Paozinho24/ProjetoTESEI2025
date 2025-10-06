@@ -16,17 +16,19 @@ class TelaCadastro:
         self.janela = tk.Toplevel(master)
         self.janela.title("Cadastrar Reagente")
         self.janela.transient(master)
+        self.janela.transient(master)
         # avoid modal grab that can block other dialogs; keep transient only
         try:
-            self.janela.geometry("420x420")
+            self.janela.geometry("420x420+700+300")
         except Exception:
             pass
 
         form = ttk.Frame(self.janela, padding=12)
+        form = ttk.Frame(self.janela, padding=12)
         form.pack(fill="both", expand=True)
 
         # Campos
-        self.ent_nome =self.LinhaForm(form, 0, "Nome*")
+        self.ent_nome =self.LinhaForm(form, 0, "Nome")
         self.ent_formula=self.LinhaForm(form, 1, "Fórmula")
         self.ent_cas=self.LinhaForm(form, 2, "CAS")
         self.cmb_unidade=self.ComboForm(form, 3, "Unidade", ("g", "mg", "kg", "mL", "L", "unid"))
@@ -104,6 +106,7 @@ class TelaCadastro:
         
         #Validar_Unidade
         unidade= self.cmb_unidade.get().strip()
+        print(unidade)
         if not unidade or unidade not in self.cmb_unidade['values']:
             messagebox.showinfo('Warning', 'Informe a unidade do reagente')
             try:
@@ -136,13 +139,16 @@ class TelaCadastro:
 
         # Fecha a janela primeiro para evitar quebra o loop pricipal 
         parent = getattr(self.janela, 'master', None)
+        parent = getattr(self.janela, 'master', None)
         try:
             try:
                 #TENTA LIBERAR O GRAP SE ESTIVER PRESENTE
                 self.janela.grab_release()
+                self.janela.grab_release()
             except Exception:
                 pass
             try:
+                self.janela.destroy()
                 self.janela.destroy()
             except Exception:
                 pass

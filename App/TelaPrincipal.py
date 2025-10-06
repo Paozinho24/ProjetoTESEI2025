@@ -1,4 +1,5 @@
 import ttkbootstrap as ttk
+from ttkbootstrap.dialogs import Messagebox
 from ttkbootstrap.constants import *
 from Control import ControllerGeral
 from Model import Model
@@ -12,6 +13,7 @@ class TelaPrincipal():
         self.model = Model()
         self.controller = ControllerGeral()
         self.janela_tela_principal = master
+        self.janela_tela_principal.title('Tela Principal')
 
         # Pode falhar no Linux; não é crítico
         try:
@@ -23,7 +25,6 @@ class TelaPrincipal():
         style.configure('TButton', font=('TkDefaultFont', 12, 'bold'), padding=10)
         style.configure('primary.TButton', font=('TkDefaultFont', 13, 'bold'), padding=10)
 
-        self.janela_tela_principal.title('Tela Principal')
 
 
         #criação da imagem:
@@ -119,7 +120,6 @@ class TelaPrincipal():
         self.tabela.bind("<Double-1>", self.abrirEditar)
         self.botao_editar = ttk.Button(self.frame_inferior_botoes, text='Editar', bootstyle='warning' , width=15 , padding=(10), command=self.abrirEditar)
         self.botao_retirar    = ttk.Button(self.frame_inferior_botoes, text='Retirar',     bootstyle='primary', width=15, command=self.abrirRetirar)
-
 
         self.botao_cadastrar.pack(side='left', padx=8)
         self.botao_relatorios.pack(side='left', padx=8)

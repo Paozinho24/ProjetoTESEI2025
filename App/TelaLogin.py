@@ -3,7 +3,7 @@ from TelaPrincipal import TelaPrincipal
 from Control import ControllerGeral
 from tkinter import messagebox
 
-ARQ_USUARIO = "ultimo_usuario.txt"
+ARQ_USUARIO = "ultimo_usurious.txt"
 
 class TelaLogin:
     def __init__(self, master):
