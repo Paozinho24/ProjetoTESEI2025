@@ -15,12 +15,10 @@ class TelaEditarReagente():
     
         self.controller = controller
         self.on_saved = on_saved
-        # Reintroduzindo self.win (Composição)
         self.win = tk.Toplevel(master) 
-        
         self.win.title("Editar Reagente")
         self.win.transient(master)
-        # O grab_set foi removido para evitar conflitos com Messagebox.
+        self.win.grab_set()
 
         try:
             self.win.geometry("420x420+700+300")
